@@ -160,9 +160,9 @@ Dialogue: 0,${toAssTime(0)},${toAssTime(DUR)},QM,,0,0,0,,{\\an5\\pos(${W/2},${sy
     "-filter_complex", flt.join(";"),
     "-map", "[v]",
     ...(music ? ["-map", `${musicIdx}:a`, "-af", "volume=0.25"] : []),
-    "-c:v", "libx264", "-preset", "fast", "-crf", "22", "-pix_fmt", "yuv420p",
+    "-c:v", "libx264", "-preset", "medium", "-crf", "23", "-pix_fmt", "yuv420p",
     "-t", `${DUR}`,
-    ...(music ? ["-c:a", "aac"] : []),
+    ...(music ? ["-c:a", "aac", "-b:a", "128k"] : []),
     output,
   ];
 

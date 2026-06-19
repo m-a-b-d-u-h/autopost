@@ -38,13 +38,22 @@ export async function createPost(token, channelId, text, videoUrl, service, vide
       ${assets}
     }) {
       ... on PostActionSuccess {
-        post { id text dueAt }
+        post { id text dueAt status error { message } }
       }
       ... on MutationError { message }
     }
   }`;
 
-  return graphql(token, mutation);
+  const data = await graphql(token, mutation);
+  const result = data?.createPost;
+  if (result?.message) {
+    throw new Error(`Buffer createPost error: ${result.message}`);
+  }
+  const post = result?.post;
+  if (post?.status === "error" || post?.error) {
+    throw new Error(`Buffer publish error: ${post.error?.message || post.status}`);
+  }
+  return data;
 }
 
 function buildMetadata(service, videoUrl, videoTitle) {
@@ -54,6 +63,8 @@ function buildMetadata(service, videoUrl, videoTitle) {
     case "youtube":
       const title = videoTitle ? JSON.stringify(videoTitle) : '"1section"';
       return `{ youtube: { title: ${title}, privacy: public, categoryId: "24" } }`;
+    case "tiktok":
+      return `{ tiktok: { isAiGenerated: false } }`;
     case "twitter":
       return null;
     default:
