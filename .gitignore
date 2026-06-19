@@ -1,0 +1,12 @@
+node_modules/
+output/
+*.mp4
+*.png
+*.jpg
+.env
+assets/music/*
+!assets/music/.gitkeep
+assets/backgrounds/*
+!assets/backgrounds/.gitkeep
+assets/fonts/*
+!assets/fonts/.gitkeep

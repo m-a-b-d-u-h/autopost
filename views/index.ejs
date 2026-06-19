@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Autopost Manager</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f0f11;
+      color: #e4e4e7;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+    h1 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .subtitle { color: #a1a1aa; font-size: 0.875rem; margin-bottom: 1.5rem; }
+    .stats {
+      display: flex; gap: 1rem; margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: #1a1a1e; border: 1px solid #27272a; border-radius: 8px;
+      padding: 1rem 1.5rem; flex: 1;
+    }
+    .stat-card .label { font-size: 0.75rem; color: #a1a1aa; text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-card .value { font-size: 1.75rem; font-weight: 700; margin-top: 0.25rem; }
+    .section {
+      background: #1a1a1e; border: 1px solid #27272a; border-radius: 8px;
+      padding: 1.25rem; margin-bottom: 1.5rem;
+    }
+    .section-title { font-size: 0.875rem; font-weight: 600; margin-bottom: 0.75rem; }
+    .schedule-form {
+      display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+    }
+    .schedule-form label { font-size: 0.875rem; color: #a1a1aa; }
+    .schedule-times {
+      margin-top: 0.75rem; font-size: 0.8rem; color: #a1a1aa;
+    }
+    .schedule-times span {
+      display: inline-block; background: #27272a; border-radius: 4px;
+      padding: 0.125rem 0.5rem; margin: 0.125rem;
+    }
+    select, button {
+      background: #27272a; border: 1px solid #3f3f46; border-radius: 6px;
+      color: #e4e4e7; padding: 0.5rem 1rem; font-size: 0.875rem;
+    }
+    select { min-width: 140px; }
+    button { cursor: pointer; font-weight: 500; transition: background 0.15s; }
+    button:hover { background: #3f3f46; }
+    .btn-primary { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+    .btn-primary:hover { background: #2563eb; }
+    .btn-danger { background: #ef4444; border-color: #ef4444; color: #fff; }
+    .btn-danger:hover { background: #dc2626; }
+    .btn-danger:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-sm { padding: 0.375rem 0.75rem; font-size: 0.75rem; }
+    .video-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .video-item {
+      background: #1a1a1e; border: 1px solid #27272a; border-radius: 8px;
+      padding: 0.75rem 1rem; display: flex; align-items: center; gap: 1rem;
+    }
+    .video-item .info { flex: 1; min-width: 0; }
+    .video-item .name { font-size: 0.875rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .video-item .meta { font-size: 0.75rem; color: #a1a1aa; margin-top: 0.125rem; }
+    .video-item .actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+    .empty { text-align: center; padding: 3rem 1rem; color: #a1a1aa; }
+    .empty p { margin-top: 0.5rem; }
+    .toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      background: #22c55e; color: #fff; padding: 0.75rem 1.25rem;
+      border-radius: 8px; font-size: 0.875rem; font-weight: 500;
+      opacity: 0; transition: opacity 0.3s; pointer-events: none;
+    }
+    .toast.error { background: #ef4444; }
+    .toast.show { opacity: 1; }
+    .spinner {
+      display: inline-block; width: 1rem; height: 1rem;
+      border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin 0.6s linear infinite;
+      vertical-align: middle; margin-right: 0.375rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Autopost Manager</h1>
+    <p class="subtitle">Quote video generation &amp; publishing dashboard</p>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="label">Total Videos</div>
+        <div class="value"><%= videos.length %></div>
+      </div>
+      <div class="stat-card">
+        <div class="label">Types Published</div>
+        <div class="value"><%= typesPublished %></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Schedule</div>
+      <div class="schedule-form">
+        <label for="count">Posts per day:</label>
+        <select id="count">
+          <% for (let i = 1; i <= 12; i++) { %>
+            <option value="<%= i %>" <%= schedule.count === i ? 'selected' : '' %>><%= i %>x</option>
+          <% } %>
+        </select>
+        <button class="btn-primary" onclick="updateSchedule()">Update</button>
+        <span id="schStatus" style="font-size:0.8rem;color:#a1a1aa"></span>
+      </div>
+      <div class="schedule-times">
+        Post times:
+        <% schedule.crons.forEach(c => { %>
+          <span><%= c.match(/0 (\d+)/)?.[1] ?? '?' %>:00</span>
+        <% }) %>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Generate</div>
+      <button class="btn-primary" onclick="generate()" id="genBtn">Generate & Publish</button>
+      <span id="genStatus" style="font-size:0.8rem;color:#a1a1aa;margin-left:0.75rem"></span>
+    </div>
+
+    <div class="video-list">
+      <% if (videos.length === 0) { %>
+        <div class="empty">
+          <p>No videos yet. Click "Generate &amp; Publish" to create one.</p>
+        </div>
+      <% } %>
+      <% videos.forEach(v => { %>
+        <% const ps = pubStatus[v.file]; %>
+        <div class="video-item" id="vid-<%= v.file %>">
+          <div class="info">
+            <div class="name"><%= v.type %> — <%= v.file %></div>
+            <div class="meta"><%= v.date %> &middot; <%= v.size %></div>
+            <% if (ps) { %>
+              <div class="meta" style="margin-top:0.25rem">
+                <% ps.results.forEach(r => { %>
+                  <span style="font-size:0.7rem;margin-right:0.5rem">
+                    <%= r.ok ? '✅' : '❌' %> <%= r.channel %>
+                  </span>
+                <% }) %>
+              </div>
+            <% } %>
+          </div>
+          <div class="actions">
+            <button class="btn-sm" onclick="window.open('/videos/<%= v.file %>','_blank')">View</button>
+            <% if (!ps) { %>
+              <span style="font-size:0.7rem;color:#a1a1aa;margin-right:0.5rem">? unknown</span>
+              <button class="btn-sm btn-danger" onclick="publishConfirm('<%= v.file %>', this)">Publish</button>
+            <% } else if (ps.results.some(r => !r.ok)) { %>
+              <button class="btn-sm btn-danger" onclick="publishConfirm('<%= v.file %>', this)">Retry</button>
+            <% } %>
+            <form method="POST" action="/delete" style="display:inline" onsubmit="return confirm('Delete <%= v.file %>?')">
+              <input type="hidden" name="file" value="<%= v.file %>">
+              <button class="btn-sm btn-danger" type="submit">Delete</button>
+            </form>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    async function publishConfirm(file, btn) {
+      if (!confirm(`Publish "${file}" to Buffer channels?`)) return;
+      btn.disabled = true;
+      btn.textContent = '...';
+      try {
+        const res = await fetch('/republish', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ file })
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Failed');
+        showToast('Published successfully!');
+        setTimeout(() => location.reload(), 1000);
+      } catch (err) {
+        showToast(err.message, true);
+        btn.disabled = false;
+        btn.textContent = 'Retry';
+      }
+    }
+
+    async function updateSchedule() {
+      const btn = event.target;
+      const status = document.getElementById('schStatus');
+      btn.disabled = true;
+      status.innerHTML = '<span class="spinner"></span>Saving...';
+
+      try {
+        const res = await fetch('/schedule', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ count: parseInt(document.getElementById('count').value) })
+        });
+        const data = await res.json();
+        if (!data.crons) throw new Error(data.error || 'Failed');
+        showToast('Schedule updated!');
+        setTimeout(() => location.reload(), 1000);
+      } catch (err) {
+        showToast(err.message, true);
+        btn.disabled = false;
+        status.innerHTML = '';
+      }
+    }
+
+    async function generate() {
+      const btn = document.getElementById('genBtn');
+      const status = document.getElementById('genStatus');
+      btn.disabled = true;
+      status.innerHTML = '<span class="spinner"></span>Generating...';
+
+      try {
+        const res = await fetch('/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({})
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Failed');
+        showToast('Quote generated & published!');
+        setTimeout(() => location.reload(), 1500);
+      } catch (err) {
+        showToast(err.message, true);
+        btn.disabled = false;
+        status.innerHTML = '';
+      }
+    }
+
+    function showToast(msg, isError) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast' + (isError ? ' error' : '') + ' show';
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+  </script>
+</body>
+</html>
