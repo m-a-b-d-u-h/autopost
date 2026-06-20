@@ -1,42 +1,55 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DIR="$(cd "$(dirname "$0")" && pwd)"
-cd "$DIR"
+REPO="https://github.com/m-a-b-d-u-h/autopost.git"
+APP_DIR="$HOME/autopost"
+ENV_FILE="$APP_DIR/.env"
 
-echo "=== Autopost Setup ==="
+echo "[1/6] Checking prerequisites..."
+command -v node &>/dev/null || { echo "Node.js not found"; exit 1; }
+command -v ffmpeg &>/dev/null || { echo "ffmpeg not found, installing..."; apt-get install -y ffmpeg; }
+command -v ffprobe &>/dev/null || { echo "ffprobe not found"; exit 1; }
+echo "   node $(node -v), ffmpeg $(ffmpeg -version | head -1 | awk '{print $3}')"
+npm install -g pm2
 
-# Check prerequisites
-command -v node >/dev/null 2>&1 || { echo "Node.js is required. Install from https://nodejs.org"; exit 1; }
-command -v ffmpeg >/dev/null 2>&1 || { echo "ffmpeg is required"; exit 1; }
-command -v ffprobe >/dev/null 2>&1 || { echo "ffprobe is required"; exit 1; }
-
-echo "[1/4] Creating directories..."
-mkdir -p assets/fonts assets/backgrounds assets/music assets/logo output
-
-echo "[2/4] Installing npm dependencies..."
-npm install
-
-echo "[3/4] Setting up .env..."
-if [ ! -f .env ]; then
-  if [ -f .env.example ]; then
-    cp .env.example .env
-    echo "  Created .env from .env.example"
-    echo "  => Edit .env with your API keys before running the server"
-  else
-    echo "  WARNING: No .env.example found. Create .env manually."
-  fi
+echo "[2/6] Cloning repo..."
+if [ -d "$APP_DIR/.git" ]; then
+  git -C "$APP_DIR" pull
+elif [ -d "$APP_DIR" ]; then
+  echo ">>> $APP_DIR exists but not a git repo. Remove it and re-run."
+  exit 1
 else
-  echo "  .env already exists, skipping"
+  git clone "$REPO" "$APP_DIR"
 fi
 
-echo "[4/4] Checking assets..."
-[ "$(ls -A assets/fonts/ 2>/dev/null)" ] || echo "  WARNING: assets/fonts/ is empty — place .ttf files here"
-[ "$(ls -A assets/backgrounds/ 2>/dev/null)" ] || echo "  WARNING: assets/backgrounds/ is empty — place video backgrounds here"
-[ "$(ls -A assets/music/ 2>/dev/null)" ] || echo "  WARNING: assets/music/ is empty — place background music here"
-[ "$(ls -A assets/logo/ 2>/dev/null)" ] || echo "  WARNING: assets/logo/ is empty — place profile photo here"
+cd "$APP_DIR"
+
+echo "[3/6] Installing dependencies..."
+npm ci --omit=dev
+
+echo "[4/6] Setting up assets and env..."
+mkdir -p assets/fonts assets/backgrounds assets/music assets/logo output
+
+if [ ! -f "$ENV_FILE" ]; then
+  if [ -f .env.example ]; then
+    cp .env.example "$ENV_FILE"
+    echo ">>> Edit $ENV_FILE with your secrets, then re-run this script."
+    exit 1
+  else
+    echo ">>> WARNING: No .env.example found. Create $ENV_FILE manually."
+  fi
+fi
+
+echo "[5/6] Starting app with PM2..."
+pm2 start ecosystem.config.cjs
+pm2 save
+
+echo "[6/6] Enabling PM2 on boot..."
+pm2 startup systemd -u "$(whoami)" --hp "$HOME"
 
 echo ""
-echo "=== Setup complete ==="
-echo "Run: node server.js"
-echo "Dashboard: http://localhost:8001"
+echo "✓ Setup complete!"
+echo "   App:  $APP_DIR"
+echo "   PM2:  pm2 list"
+echo "   Logs: pm2 logs autopost"
+echo "   Dashboard: http://localhost:8001"
