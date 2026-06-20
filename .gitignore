@@ -1,12 +1,11 @@
 node_modules/
 output/
+!assets/backgrounds/
 *.mp4
 *.png
 *.jpg
 .env
 assets/music/*
 !assets/music/.gitkeep
-assets/backgrounds/*
-!assets/backgrounds/.gitkeep
 assets/fonts/*
 !assets/fonts/.gitkeep
