@@ -6,8 +6,7 @@ import { runPipeline } from "./pipeline.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CONFIG_PATH = join(__dirname, "schedule-config.json");
-const DEFAULT_COUNT = 6;
-const START_HOUR = 6, END_HOUR = 22;
+const DEFAULT_COUNT = 12;
 
 let jobs = [];
 
@@ -22,11 +21,10 @@ function loadConfig() {
 
 function generateCrons(count) {
   if (count <= 1) return ["0 12 * * *"];
-  const span = END_HOUR - START_HOUR;
-  const gap = span / (count - 1);
+  const gap = 24 / count;
   const crons = [];
   for (let i = 0; i < count; i++) {
-    const h = START_HOUR + Math.round(i * gap);
+    const h = Math.floor(i * gap);
     crons.push(`0 ${h} * * *`);
   }
   return crons;
@@ -38,14 +36,13 @@ function stopJobs() {
 }
 
 function startJobs(crons) {
-  const tz = process.env.TZ || "America/New_York";
   for (const expr of crons) {
     const j = cron.schedule(expr, () => {
-      console.log(`[scheduler] Trigger at ${new Date().toISOString()} ET`);
+      console.log(`[scheduler] Trigger at ${new Date().toISOString()}`);
       runPipeline().catch((err) => {
         console.error(`[scheduler] Error:`, err.message);
       });
-    }, { timezone: tz, scheduled: true });
+    }, { scheduled: true });
     jobs.push(j);
   }
 }
@@ -54,12 +51,12 @@ export function startScheduler() {
   const cfg = loadConfig();
   const crons = generateCrons(cfg.count);
   startJobs(crons);
-  console.log(`[scheduler] Started ${cfg.count} jobs (timezone: ${process.env.TZ || "America/New_York"}): ${crons.join(", ")}`);
+  console.log(`[scheduler] Started ${cfg.count} jobs (UTC): ${crons.join(", ")}`);
 }
 
 export function restartScheduler(count) {
   stopJobs();
-  writeFileSync(CONFIG_PATH, JSON.stringify({ count, startHour: START_HOUR, endHour: END_HOUR }, null, 2));
+  writeFileSync(CONFIG_PATH, JSON.stringify({ count }, null, 2));
   const crons = generateCrons(count);
   startJobs(crons);
   console.log(`[scheduler] Restarted ${count} jobs: ${crons.join(", ")}`);

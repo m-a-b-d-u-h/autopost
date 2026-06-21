@@ -55,9 +55,14 @@ function loadPublishStatus() {
 
 app.get("/", (req, res) => {
   const videos = getVideos();
-  const typesPublished = new Set(videos.map((v) => v.type)).size;
-  const schedule = getSchedule();
   const pubStatus = loadPublishStatus();
+  const typesPublished = new Set(
+    videos.filter((v) => {
+      const ps = pubStatus[v.file];
+      return ps && ps.results && ps.results.some((r) => r.ok);
+    }).map((v) => v.type)
+  ).size;
+  const schedule = getSchedule();
   res.render("index", { videos, types: TYPES, typesPublished, schedule, pubStatus });
 });
 
@@ -97,8 +102,8 @@ app.get("/schedule", (req, res) => {
 
 app.put("/schedule", (req, res) => {
   const count = parseInt(req.body.count, 10);
-  if (isNaN(count) || count < 1 || count > 12) {
-    return res.status(400).json({ error: "Count must be 1-12" });
+  if (isNaN(count) || count < 1 || count > 24) {
+    return res.status(400).json({ error: "Count must be 1-24" });
   }
   const crons = restartScheduler(count);
   res.json({ count, crons });

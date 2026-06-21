@@ -103,7 +103,7 @@
       <div class="schedule-form">
         <label for="count">Posts per day:</label>
         <select id="count">
-          <% for (let i = 1; i <= 12; i++) { %>
+          <% for (let i = 1; i <= 24; i++) { %>
             <option value="<%= i %>" <%= schedule.count === i ? 'selected' : '' %>><%= i %>x</option>
           <% } %>
         </select>
@@ -113,7 +113,7 @@
       <div class="schedule-times">
         Post times:
         <% schedule.crons.forEach(c => { %>
-          <span><%= c.match(/0 (\d+)/)?.[1] ?? '?' %>:00</span>
+          <span><%= c.match(/(\d+) (\d+)/)?.[2]?.padStart(2,'0') ?? '?' %>:<%= c.match(/(\d+) (\d+)/)?.[1]?.padStart(2,'0') ?? '??' %></span>
         <% }) %>
       </div>
     </div>
