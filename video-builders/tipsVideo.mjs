@@ -117,19 +117,19 @@ export async function generateTipsVideo({ hook, tips, cta, output }) {
   const pfpX = Math.round((W - pfpW) / 2);
   const pfpY = 1450;
 
-  const hookFontSize = 78;
+  const hookFontSize = 82;
   const numFontSize = 66;
-  const titleFontSize = 50;
-  const descFontSize = 32;
-  const exFontSize = 28;
-  const ctaFontSize = 52;
-  const hookLineH = 105;
+  const titleFontSize = 56;
+  const descFontSize = 36;
+  const exFontSize = 32;
+  const ctaFontSize = 62;
+  const hookLineH = 110;
   const numH = 76;
-  const titleH = 58;
-  const descLineH = 40;
-  const exH = 36;
-  const ctaLineH = 66;
-  const contentCenterY = 730;
+  const titleH = 64;
+  const descLineH = 44;
+  const exH = 40;
+  const ctaLineH = 74;
+  const contentCenterY = 720;
   const GOLD = "&H0000D7FF&";
   const LIGHT = "&H00D0D0D0&";
 
@@ -141,12 +141,12 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Hook,Noto Sans,${hookFontSize},&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
+Style: Hook,Noto Sans,${hookFontSize},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,2,2,5,60,60,60,1
 Style: Num,Noto Sans,${numFontSize},${GOLD},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipT,Noto Sans,${titleFontSize},&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipD,Noto Sans,${descFontSize},${LIGHT},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipEx,Noto Sans,${exFontSize},${GOLD},&H00000000,&H00000000,0,1,0,0,100,100,0,0,1,0,0,5,60,60,60,1
-Style: EndCTA,Noto Sans,${ctaFontSize},&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
+Style: EndCTA,Noto Sans,${ctaFontSize},${GOLD},&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,2,2,5,60,60,60,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -159,6 +159,8 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
       const y = Math.round(top + i * hookLineH + hookLineH / 2);
       ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},Hook,,0,0,0,,{\\an5\\pos(${W / 2},${y})\\fad(0,300)}${hookLines[i]}\n`;
     }
+    const barY = Math.round(top + hookLines.length * hookLineH + 30);
+    ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},,,0,0,0,,{\\fad(0,300)\\p1\\c${GOLD}\\bord0\\pos(${(W - 200) / 2},${barY})}m 0 0 l 200 0{\\p0}\n`;
   }
 
   for (let i = 0; i < tipCount; i++) {
