@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/videos", express.static(join(__dirname, "output")));
 app.use("/music", express.static(join(__dirname, "assets", "music")));
 
-const TYPES = ["quote", "tips"];
+const TYPES = ["quote", "lessons"];
 const PUBLISH_PATH = join(__dirname, "publish-status.json");
 
 function getVideos() {

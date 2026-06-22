@@ -97,7 +97,7 @@ function toAssTime(s) {
   return `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}.${String(cs).padStart(2, "0")}`;
 }
 
-export async function generateTipsVideo({ hook, tips, cta, output }) {
+export async function generateLessonsVideo({ hook, tips, cta, output }) {
   const music = findMusic();
   const bgFiles = await findBackground();
   const ts = Date.now();

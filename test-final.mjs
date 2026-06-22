@@ -1,13 +1,15 @@
-import { generateTipsVideo } from "./video-builders/tipsVideo.mjs";
-const out = await generateTipsVideo({
-  hook: "4 things you do that secretly kill your focus every day",
+import { generateLessonsVideo } from "./video-builders/lessonsVideo.mjs";
+const out = await generateLessonsVideo({
+  hook: "6 assets that pay you forever without working harder",
   tips: [
-    { title: "Task Switching Addiction", description: "Jumping between tabs every 2 minutes trains your brain to be distracted and unable to focus deeply on anything", example: "Set a 25-minute timer and close every tab except one — your brain will literally rewire for deep work in days" },
-    { title: "Your Phone is a Slot Machine", description: "Every notification is a dopamine hit designed by engineers to keep you hooked and unable to concentrate on real work", example: "Put your phone in grayscale mode and another room during work hours — kills the dopamine loop instantly" },
-    { title: "You Start Mornings Reacting", description: "Grabbing your phone first thing puts you in reactive mode all day instead of being intentional with your time and energy", example: "No phone for the first 30 minutes after waking — use that time to plan your day instead of drowning in everyone else's" },
-    { title: "Multitasking is a Lie", description: "Your brain cannot actually do two things at once — it just switches rapidly and drains your mental battery twice as fast", example: "Batch all similar tasks together and do them in one block — your brain will thank you with 2x the output" },
+    { title: "Your Skills Compound", description: "One skill mastered early pays dividends every single year without extra effort or time investment from you", example: "A developer who learned AI automation in 2023 is now earning 3x while working half the hours they used to" },
+    { title: "Digital Products Scale", description: "Create once, sell infinitely — no inventory, no shipping, no hourly trade for money like a regular job", example: "A $47 online course about budgeting has sold 2,000 times while the creator sleeps on vacation in Bali" },
+    { title: "Content is Land", description: "Every video or post you create is a piece of digital real estate that works for you 24/7 finding new opportunities", example: "One LinkedIn post from 3 months ago still brings freelance offers to your inbox every single week" },
+    { title: "Networks Pay Rent", description: "The right relationships open doors that no amount of hard work or talent can unlock on their own", example: "A casual coffee chat led to a joint venture that now generates $8k monthly in passive affiliate commissions" },
+    { title: "Systems Replace Hours", description: "Automated workflows run your business while you focus on what only you can do at your highest level", example: "A simple email funnel with 3 sequences replaced 20 hours of weekly manual follow-ups for a small agency" },
+    { title: "Royalties Keep Giving", description: "Licensing your intellectual property creates income streams that don't stop when you stop working entirely", example: "An ebook licensed to 3 publishers brings in $400 monthly — 6 years after it was written in a weekend" },
   ],
-  cta: "Bet you didn't realize you were doing this? Follow for more reality checks",
-  output: `output/tips-styled-${Date.now()}.mp4`
+  cta: "Which asset are you building right now? Save this and follow for more wealth revelations",
+  output: `output/lessons-${Date.now()}.mp4`
 });
 console.log("Done:", out);

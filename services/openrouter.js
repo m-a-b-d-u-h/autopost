@@ -1,9 +1,9 @@
 const MODEL = process.env.OPENROUTER_MODEL || "nvidia/nemotron-3-ultra-550b-a55b:free";
 
 export async function generateContent(type = "quote") {
-  const prompt = type === "tips" ? buildTipsPrompt() : buildPrompt();
+  const prompt = type === "lessons" ? buildLessonsPrompt() : buildPrompt();
   const text = await askAI(prompt);
-  return type === "tips" ? parseTipsContent(text) : parseContent(text);
+  return type === "lessons" ? parseLessonsContent(text) : parseContent(text);
 }
 
 async function askAI(prompt, retries = 3) {
@@ -76,22 +76,24 @@ function parseContent(text) {
   };
 }
 
-function buildTipsPrompt() {
-  return `You are a viral content expert. Cover ANY topic that matters today — technology, finance, psychology, work, business, self-development, health, science, culture, or any real-world trend people care about. Use simple, sharp language.
+function buildLessonsPrompt() {
+  return `You are a viral content creator who speaks hard truths. Cover universal topics — money, career, mindset, habits, freedom, success, hidden opportunities, life stages. Use sharp, emotional, surprising language that stops the scroll.
 
-Generate content for a "tips list" social media video. Return a JSON object with:
- - "hook": a strong opening line that grabs attention by pointing out a common problem people face, then promises the best, most surprising solution. Make it emotional and punchy — something that makes people think "wait, really?". 5 to 12 words. Vary the opening number to match the tip count. Examples: "3 mindset shifts that will wreck your anxiety", "4 things you do that signal low confidence", "5 habits secretly making you unhappier", "6 lessons nobody taught you about money"
-- "tips": an array of 3 to 6 objects (vary the count each time), each with:
-  - "title": short, punchy tip title (2-5 words)
-  - "description": one short sentence explaining the tip (8-15 words)
-  - "example": one specific, actionable example that shows exactly how to apply the tip (10-20 words). Make it concrete and practical.
-- "cta": a funny or witty call-to-action under 12 words. Ask viewers to follow, like, save, share, or comment with a humorous twist.
-- "caption": one short paragraph (2-3 sentences) for social media. Do not repeat the hook or tips verbatim. End with #1section.
+Generate content for a "numbered lessons" social media video. Each lesson reveals something people don't realize about a universal problem or opportunity, then hits them with a truth they can't ignore.
 
-Make the tips practical, specific, and useful. Vary the topic and tip count (3 to 6) from video to video. English only. Return ONLY valid JSON.`;
+Return a JSON object with:
+- "hook": a numbered opening line that grabs attention by pointing at a universal problem, opportunity, or life truth. 5 to 12 words. Make it forward-looking or eye-opening. Examples: "5 booming businesses you must try in 2026", "6 assets that pay you forever", "4 signs you're financially smarter than you think", "3 life levels you need to understand", "6 money lessons most people learn too late", "5 hidden habits that accelerate success"
+- "tips": an array of 3 to 6 objects (vary the count to match hook number), each with:
+  - "title": one insight or realization in 2-5 words. Punchy, memorable.
+  - "description": the big idea — explain WHY this matters (8-15 words). Make it emotional or surprising.
+  - "example": one concrete truth or real-life application (10-20 words). Make it hit home.
+- "cta": a clever or witty call-to-action under 12 words. Ask to follow, save, share, or comment.
+- "caption": one short paragraph (2-3 sentences) for social media. End with #1section.
+
+Cover topics like: financial freedom, career pivots, hidden assets, wealth habits, life stages, mindset shifts, digital opportunities, passive income, personal growth. Vary the number (3 to 6). Every video must feel like a revelation, not a lecture. English only. Return ONLY valid JSON.`;
 }
 
-function parseTipsContent(text) {
+function parseLessonsContent(text) {
   const json = text.replace(/```json\s*|\s*```/g, "").trim();
   const parsed = JSON.parse(json);
   const tips = (parsed.tips || []).map(t => ({
@@ -100,10 +102,10 @@ function parseTipsContent(text) {
     example: t.example || "",
   }));
   return {
-    type: "tips",
+    type: "lessons",
     hook: parsed.hook,
     tips,
-    cta: parsed.cta || "Follow for more tips like this",
+    cta: parsed.cta || "Follow for more revelations",
     caption: parsed.caption || parsed.hook + " #1section",
     footer: "1section.com",
   };
