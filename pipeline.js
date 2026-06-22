@@ -8,6 +8,7 @@ import { getChannels, createPost } from "./services/buffer.js";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const STATE_PATH = join(__dirname, "rotation-state.json");
 const PUBLISH_PATH = join(__dirname, "publish-status.json");
+const TYPES = ["quote", "tips"];
 
 function getRotation() {
   if (!existsSync(STATE_PATH)) return 0;
@@ -15,7 +16,8 @@ function getRotation() {
 }
 
 function advanceRotation() {
-  const next = 0;
+  const cur = getRotation();
+  const next = (cur + 1) % TYPES.length;
   writeFileSync(STATE_PATH, JSON.stringify({ index: next }));
   return next;
 }
@@ -33,11 +35,13 @@ function savePublishStatus(status) {
   writeFileSync(PUBLISH_PATH, JSON.stringify(status, null, 2));
 }
 
-export async function runPipeline() {
-  console.log(`[pipeline] Starting: quote`);
+export async function runPipeline(typeOverride) {
+  const type = typeOverride || TYPES[getRotation()];
+  console.log(`[pipeline] Starting: ${type}`);
 
-  const content = await generateContent();
-  console.log(`[pipeline] Content generated`);
+  const content = await generateContent(type);
+  console.log(`[pipeline] Content generated (${type})`);
+  if (!typeOverride) advanceRotation();
 
   const videoPath = await generateVideo(content);
   console.log(`[pipeline] Video rendered: ${videoPath}`);
@@ -56,7 +60,7 @@ export async function runPipeline() {
     const results = [];
     for (const ch of channels) {
       try {
-        const videoTitle = content.title || content.source || "1section";
+        const videoTitle = content.title || content.source || content.hook || "1section";
         await createPost(token, ch.id, content.caption, videoUrl, ch.service, videoTitle);
         results.push({ channel: ch.name, service: ch.service, ok: true });
         console.log(`[pipeline] Posted to ${ch.name} (${ch.service})`);
@@ -69,6 +73,7 @@ export async function runPipeline() {
 
     const status = loadPublishStatus();
     status[videoFile] = {
+      type: content.type,
       caption: content.caption,
       source: content.source,
       results,

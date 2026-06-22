@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/videos", express.static(join(__dirname, "output")));
 app.use("/music", express.static(join(__dirname, "assets", "music")));
 
-const TYPES = ["quote"];
+const TYPES = ["quote", "tips"];
 const PUBLISH_PATH = join(__dirname, "publish-status.json");
 
 function getVideos() {
@@ -56,14 +56,14 @@ function loadPublishStatus() {
 app.get("/", (req, res) => {
   const videos = getVideos();
   const pubStatus = loadPublishStatus();
-  const typesPublished = new Set(
+  const publishedWithTypes = new Set(
     videos.filter((v) => {
       const ps = pubStatus[v.file];
       return ps && ps.results && ps.results.some((r) => r.ok);
-    }).map((v) => v.type)
-  ).size;
+    }).map((v) => pubStatus[v.file]?.type || v.type)
+  );
   const schedule = getSchedule();
-  res.render("index", { videos, types: TYPES, typesPublished, schedule, pubStatus });
+  res.render("index", { videos, types: TYPES, typesPublished: publishedWithTypes.size, schedule, pubStatus });
 });
 
 app.get("/health", (req, res) => {
@@ -83,10 +83,11 @@ app.get("/channels", async (req, res) => {
 
 app.post("/generate", async (req, res) => {
   try {
-    const result = await runPipeline();
+    const type = req.body.type || undefined;
+    const result = await runPipeline(type);
     res.json({
       success: true,
-      type: "quote",
+      type: result.content.type,
       videoUrl: result.videoUrl,
       bufferResult: result.bufferResult,
     });

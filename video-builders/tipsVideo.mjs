@@ -1,12 +1,11 @@
 import { spawn } from "child_process";
-import { readdirSync, existsSync, readFileSync, mkdirSync, writeFileSync, unlinkSync } from "fs";
+import { readdirSync, existsSync, readFileSync, writeFileSync, unlinkSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const W = 1080, H = 1920, DUR = 30;
 const BG_DIR = join(__dirname, "..", "assets", "backgrounds");
-const FONT_DIR = join(__dirname, "..", "assets", "fonts");
 const PROFILE_PNG = join(__dirname, "..", "assets", "logo", "i.png");
 const MUSIC_DIR = join(__dirname, "..", "assets", "music");
 const OUT_DIR = join(__dirname, "..", "output");
@@ -16,7 +15,11 @@ let durationCache = null;
 
 function loadDurationCache() {
   if (durationCache) return durationCache;
-  try { durationCache = JSON.parse(readFileSync(CACHE_FILE, "utf8")); } catch { durationCache = {}; }
+  try {
+    durationCache = JSON.parse(readFileSync(CACHE_FILE, "utf8"));
+  } catch {
+    durationCache = {};
+  }
   return durationCache;
 }
 
@@ -94,21 +97,41 @@ function toAssTime(s) {
   return `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}.${String(cs).padStart(2, "0")}`;
 }
 
-export async function generateVideo({ text, cta, output }) {
+export async function generateTipsVideo({ hook, tips, cta, output }) {
   const music = findMusic();
   const bgFiles = await findBackground();
   const ts = Date.now();
   const assFile = join(OUT_DIR, `${ts}.ass`);
 
-  const maxC = text.length > 80 ? 18 : text.length > 40 ? 22 : 28;
-  const lines = wrap(text, maxC);
-  const fontSize = text.length > 80 ? 60 : text.length > 40 ? 74 : 82;
-  const lh = fontSize * 1.5;
-  const totalTextH = lines.length * lh;
-  const sy = Math.max(200, Math.round(903 - totalTextH / 2));
+  const tipCount = tips.length;
+  const openingEnd = 5;
+  const endStart = DUR - 5;
+  const tipsDuration = endStart - openingEnd;
+  const itemDur = Math.floor(tipsDuration / Math.max(tipCount, 1));
+
+  const circled = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩"];
+
+  const hookLines = wrap(hook, 22);
+  const ctaLines = wrap(cta || "Follow for more tips", 18);
   const pfpW = 85, pfpH = 85;
-  const pfpX = Math.round((W - pfpW) / 2), pfpY = sy + totalTextH + 50;
-  const ctaY = pfpY + pfpH + 55;
+  const pfpX = Math.round((W - pfpW) / 2);
+  const pfpY = 1450;
+
+  const hookFontSize = 78;
+  const numFontSize = 66;
+  const titleFontSize = 50;
+  const descFontSize = 32;
+  const exFontSize = 28;
+  const ctaFontSize = 52;
+  const hookLineH = 105;
+  const numH = 76;
+  const titleH = 58;
+  const descLineH = 40;
+  const exH = 36;
+  const ctaLineH = 66;
+  const contentCenterY = 730;
+  const GOLD = "&H0000D7FF&";
+  const LIGHT = "&H00D0D0D0&";
 
   let ass = `[Script Info]
 ScriptType: v4.00+
@@ -118,17 +141,63 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: QM,Noto Sans,150,&H80FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
-Style: QL,Noto Sans,${fontSize},&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
-Style: CTA,Noto Sans,37,&H4DFFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
+Style: Hook,Noto Sans,${hookFontSize},&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
+Style: Num,Noto Sans,${numFontSize},${GOLD},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
+Style: TipT,Noto Sans,${titleFontSize},&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
+Style: TipD,Noto Sans,${descFontSize},${LIGHT},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
+Style: TipEx,Noto Sans,${exFontSize},${GOLD},&H00000000,&H00000000,0,1,0,0,100,100,0,0,1,0,0,5,60,60,60,1
+Style: EndCTA,Noto Sans,${ctaFontSize},&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
-Dialogue: 0,${toAssTime(0)},${toAssTime(DUR)},QM,,0,0,0,,{\\an5\\pos(${W/2},${sy-60})}\u201D
 `;
-  for (let i = 0; i < lines.length; i++)
-    ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(DUR)},QL,,0,0,0,,{\\an5\\pos(${W/2},${sy + i * lh})}${lines[i]}\n`;
-  ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(DUR)},CTA,,0,0,0,,{\\an5\\pos(${W/2},${ctaY})}${cta || "Follow for more daily wisdom like this"}\n`;
+
+  {
+    const blockH = hookLines.length * hookLineH;
+    const top = contentCenterY - blockH / 2;
+    for (let i = 0; i < hookLines.length; i++) {
+      const y = Math.round(top + i * hookLineH + hookLineH / 2);
+      ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},Hook,,0,0,0,,{\\an5\\pos(${W / 2},${y})\\fad(0,300)}${hookLines[i]}\n`;
+    }
+  }
+
+  for (let i = 0; i < tipCount; i++) {
+    const start = openingEnd + i * itemDur;
+    const end = i === tipCount - 1 ? endStart : openingEnd + (i + 1) * itemDur;
+    const t = tips[i];
+    const titleWrap = wrap(t.title, 22);
+    const descWrap = wrap(t.description, 30);
+    const exWrap = wrap(t.example || "", 30);
+    const exHasContent = exWrap.length > 0 && exWrap[0].length > 0;
+
+    const blockH = numH + titleH + descWrap.length * descLineH + (exHasContent ? exH : 0);
+    const blockTop = contentCenterY - blockH / 2;
+
+    const numY = Math.round(blockTop + numH / 2);
+    const titleY = Math.round(blockTop + numH + titleH / 2);
+    const descStartY = Math.round(blockTop + numH + titleH + descLineH / 2);
+
+    ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},Num,,0,0,0,,{\\an5\\pos(${W / 2},${numY})\\fad(300,300)}${circled[i]}\n`;
+    ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipT,,0,0,0,,{\\an5\\pos(${W / 2},${titleY})\\fad(300,300)}${titleWrap[0]}\n`;
+
+    for (let j = 0; j < descWrap.length; j++) {
+      ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipD,,0,0,0,,{\\an5\\pos(${W / 2},${descStartY + j * descLineH})\\fad(300,300)}${descWrap[j]}\n`;
+    }
+
+    if (exHasContent) {
+      const exY = Math.round(blockTop + numH + titleH + descWrap.length * descLineH + exH / 2);
+      ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipEx,,0,0,0,,{\\an5\\pos(${W / 2},${exY})\\fad(300,300)}${"→ " + exWrap[0]}\n`;
+    }
+  }
+
+  {
+    const blockH = ctaLines.length * ctaLineH;
+    const top = contentCenterY - blockH / 2;
+    for (let i = 0; i < ctaLines.length; i++) {
+      const y = Math.round(top + i * ctaLineH + ctaLineH / 2);
+      ass += `Dialogue: 0,${toAssTime(endStart)},${toAssTime(DUR)},EndCTA,,0,0,0,,{\\an5\\pos(${W / 2},${y})\\fad(400,0)}${ctaLines[i]}\n`;
+    }
+  }
 
   writeFileSync(assFile, ass, "utf8");
 

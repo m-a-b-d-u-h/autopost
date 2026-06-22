@@ -1,9 +1,9 @@
 const MODEL = process.env.OPENROUTER_MODEL || "nvidia/nemotron-3-ultra-550b-a55b:free";
 
-export async function generateContent() {
-  const prompt = buildPrompt();
+export async function generateContent(type = "quote") {
+  const prompt = type === "tips" ? buildTipsPrompt() : buildPrompt();
   const text = await askAI(prompt);
-  return parseContent(text);
+  return type === "tips" ? parseTipsContent(text) : parseContent(text);
 }
 
 async function askAI(prompt, retries = 3) {
@@ -66,11 +66,45 @@ function parseContent(text) {
   const json = text.replace(/```json\s*|\s*```/g, "").trim();
   const parsed = JSON.parse(json);
   return {
+    type: "quote",
     quote: parsed.quote,
     source: parsed.source,
     description: parsed.description,
     cta: parsed.cta || "Follow for more daily wisdom like this",
     caption: parsed.caption || parsed.description + " #1section",
+    footer: "1section.com",
+  };
+}
+
+function buildTipsPrompt() {
+  return `You are a viral content expert. Cover ANY topic that matters today — technology, finance, psychology, work, business, self-development, health, science, culture, or any real-world trend people care about. Use simple, sharp language.
+
+Generate content for a "tips list" social media video. Return a JSON object with:
+- "hook": a strong opening line that grabs attention and introduces the list theme. 5 to 12 words. Vary the opening number to match the tip count. Examples: "3 ways to level up your career", "4 habits of wealthy people", "5 tips to sleep better", "6 lessons from stoicism"
+- "tips": an array of 3 to 6 objects (vary the count each time), each with:
+  - "title": short, punchy tip title (2-5 words)
+  - "description": one short sentence explaining the tip (8-15 words)
+  - "example": one specific, actionable example that shows exactly how to apply the tip (10-20 words). Make it concrete and practical.
+- "cta": a funny or witty call-to-action under 12 words. Ask viewers to follow, like, save, share, or comment with a humorous twist.
+- "caption": one short paragraph (2-3 sentences) for social media. Do not repeat the hook or tips verbatim. End with #1section.
+
+Make the tips practical, specific, and useful. Vary the topic and tip count (3 to 6) from video to video. English only. Return ONLY valid JSON.`;
+}
+
+function parseTipsContent(text) {
+  const json = text.replace(/```json\s*|\s*```/g, "").trim();
+  const parsed = JSON.parse(json);
+  const tips = (parsed.tips || []).map(t => ({
+    title: t.title,
+    description: t.description,
+    example: t.example || "",
+  }));
+  return {
+    type: "tips",
+    hook: parsed.hook,
+    tips,
+    cta: parsed.cta || "Follow for more tips like this",
+    caption: parsed.caption || parsed.hook + " #1section",
     footer: "1section.com",
   };
 }
