@@ -117,13 +117,13 @@ export async function generateTipsVideo({ hook, tips, cta, output }) {
   const pfpX = Math.round((W - pfpW) / 2);
   const pfpY = 1450;
 
-  const hookFontSize = 96;
+  const hookFontSize = 110;
   const numFontSize = 66;
   const titleFontSize = 56;
   const descFontSize = 36;
   const exFontSize = 32;
   const ctaFontSize = 70;
-  const hookLineH = 120;
+  const hookLineH = 134;
   const numH = 76;
   const titleH = 64;
   const descLineH = 44;
@@ -141,12 +141,12 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Hook,Noto Sans,${hookFontSize},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,2,2,5,60,60,60,1
+Style: Hook,Noto Sans,${hookFontSize},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,2,0,5,60,60,60,1
 Style: Num,Noto Sans,${numFontSize},${GOLD},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipT,Noto Sans,${titleFontSize},&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipD,Noto Sans,${descFontSize},${LIGHT},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipEx,Noto Sans,${exFontSize},${GOLD},&H00000000,&H00000000,0,1,0,0,100,100,0,0,1,0,0,5,60,60,60,1
-Style: EndCTA,Noto Sans,${ctaFontSize},${GOLD},&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,2,2,5,60,60,60,1
+Style: EndCTA,Noto Sans,${ctaFontSize},${GOLD},&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,2,0,5,60,60,60,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
