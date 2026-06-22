@@ -1,14 +1,13 @@
 import { generateTipsVideo } from "./video-builders/tipsVideo.mjs";
 const out = await generateTipsVideo({
-  hook: "5 kebiasaan yang bikin kamu terlihat lemah tanpa sadar",
+  hook: "4 things you do that secretly kill your focus every day",
   tips: [
-    { title: "Membungkuk Saat Duduk", description: "Postur tubuh buruk mengirim sinyal rendah diri ke otak dan orang sekitar, bikin kamu terlihat tidak percaya diri", example: "Latihan duduk tegak dengan bahu rileks selama 5 menit setiap jam, rasakan perbedaan rasa percaya diri" },
-    { title: "Bicara Terlalu Cepat", description: "Bicara cepat tanpa jeda bikin kamu terlihat gugup, tidak siap, dan kurang profesional di mata lawan bicara", example: "Terapkan teknik jeda 2 detik setelah lawan bicara selesai sebelum kamu mulai merespon pembicaraan" },
-    { title: "Sering Minta Maaf", description: "Minta maaf untuk hal sepele bikin wibawa dan authority kamu luntur tanpa kamu sadari sedikit demi sedikit", example: "Ganti kata 'maaf ganggu' dengan 'izin sebentar' dan rasakan bedanya saat orang mulai lebih menghargai kamu" },
-    { title: "Kontak Mata Lemah", description: "Pandangan yang selalu menghindar bikin lawan bicara merasa kamu tidak jujur atau tidak tertarik sama sekali", example: "Latih kontak mata 60% dari waktu bicara, fokus ke satu mata lawan bicara agar terlihat lebih pede dan menarik" },
-    { title: "Terlalu Sering Nunduk HP", description: "Kebiasaan main HP di keramaian bikin kamu terlihat tertutup, tidak approachable, dan sulit didekati orang baru", example: "Letakkan HP di saku saat antre atau naik transportasi umum, lalu amati sekitar dengan posisi tegak dan buka body language" },
+    { title: "Task Switching Addiction", description: "Jumping between tabs every 2 minutes trains your brain to be distracted and unable to focus deeply on anything", example: "Set a 25-minute timer and close every tab except one — your brain will literally rewire for deep work in days" },
+    { title: "Your Phone is a Slot Machine", description: "Every notification is a dopamine hit designed by engineers to keep you hooked and unable to concentrate on real work", example: "Put your phone in grayscale mode and another room during work hours — kills the dopamine loop instantly" },
+    { title: "You Start Mornings Reacting", description: "Grabbing your phone first thing puts you in reactive mode all day instead of being intentional with your time and energy", example: "No phone for the first 30 minutes after waking — use that time to plan your day instead of drowning in everyone else's" },
+    { title: "Multitasking is a Lie", description: "Your brain cannot actually do two things at once — it just switches rapidly and drains your mental battery twice as fast", example: "Batch all similar tasks together and do them in one block — your brain will thank you with 2x the output" },
   ],
-  cta: "Sadar gak sadar kamu selama ini lakuin? Follow biar gak terus-terusan insecure",
+  cta: "Bet you didn't realize you were doing this? Follow for more reality checks",
   output: `output/tips-styled-${Date.now()}.mp4`
 });
 console.log("Done:", out);
