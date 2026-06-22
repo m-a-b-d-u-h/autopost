@@ -157,10 +157,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     const top = contentCenterY - blockH / 2;
     for (let i = 0; i < hookLines.length; i++) {
       const y = Math.round(top + i * hookLineH + hookLineH / 2);
-      ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},Hook,,0,0,0,,{\\an5\\pos(${W / 2},${y})\\fad(0,300)}${hookLines[i]}\n`;
+      ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},Hook,,0,0,0,,{\\an7\\pos(120,${y})\\fad(0,300)}${hookLines[i]}\n`;
     }
     const barY = Math.round(top + hookLines.length * hookLineH + 30);
-    ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},,,0,0,0,,{\\fad(0,300)\\p1\\c${GOLD}\\bord0\\pos(${(W - 200) / 2},${barY})}m 0 0 l 200 0{\\p0}\n`;
+    ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},,,0,0,0,,{\\fad(0,300)\\p1\\c${GOLD}\\bord0\\pos(120,${barY})}m 0 0 l 200 0{\\p0}\n`;
   }
 
   for (let i = 0; i < tipCount; i++) {
