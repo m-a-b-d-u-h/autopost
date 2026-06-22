@@ -111,25 +111,25 @@ export async function generateTipsVideo({ hook, tips, cta, output }) {
 
   const circled = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩"];
 
-  const hookLines = wrap(hook, 22);
-  const ctaLines = wrap(cta || "Follow for more tips", 18);
+  const hookLines = wrap(hook, 16);
+  const ctaLines = wrap(cta || "Follow for more tips", 16);
   const pfpW = 85, pfpH = 85;
   const pfpX = Math.round((W - pfpW) / 2);
   const pfpY = 1450;
 
-  const hookFontSize = 82;
+  const hookFontSize = 96;
   const numFontSize = 66;
   const titleFontSize = 56;
   const descFontSize = 36;
   const exFontSize = 32;
-  const ctaFontSize = 62;
-  const hookLineH = 110;
+  const ctaFontSize = 70;
+  const hookLineH = 120;
   const numH = 76;
   const titleH = 64;
   const descLineH = 44;
   const exH = 40;
-  const ctaLineH = 74;
-  const contentCenterY = 720;
+  const ctaLineH = 84;
+  const contentCenterY = 680;
   const GOLD = "&H0000D7FF&";
   const LIGHT = "&H00D0D0D0&";
 
@@ -195,6 +195,8 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
   {
     const blockH = ctaLines.length * ctaLineH;
     const top = contentCenterY - blockH / 2;
+    const barY = Math.round(top - 30);
+    ass += `Dialogue: 0,${toAssTime(endStart)},${toAssTime(DUR)},,,0,0,0,,{\\fad(400,0)\\p1\\c${GOLD}\\bord0\\pos(${(W - 200) / 2},${barY})}m 0 0 l 200 0{\\p0}\n`;
     for (let i = 0; i < ctaLines.length; i++) {
       const y = Math.round(top + i * ctaLineH + ctaLineH / 2);
       ass += `Dialogue: 0,${toAssTime(endStart)},${toAssTime(DUR)},EndCTA,,0,0,0,,{\\an5\\pos(${W / 2},${y})\\fad(400,0)}${ctaLines[i]}\n`;
