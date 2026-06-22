@@ -143,7 +143,7 @@ ScaledBorderAndShadow: yes
 Format: Name, Fontname, Fontsize, PrimaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Hook,Noto Sans,${hookFontSize},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,2,0,5,60,60,60,1
 Style: Num,Noto Sans,${numFontSize},${GOLD},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
-Style: TipT,Noto Sans,${titleFontSize},&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
+Style: TipT,Noto Sans,${titleFontSize},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,1,60,60,60,1
 Style: TipD,Noto Sans,${descFontSize},${LIGHT},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipEx,Noto Sans,${exFontSize},${GOLD},&H00000000,&H00000000,0,1,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: EndCTA,Noto Sans,${ctaFontSize},${GOLD},&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,2,0,5,60,60,60,1
@@ -179,16 +179,17 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     const titleY = Math.round(blockTop + numH + titleH / 2);
     const descStartY = Math.round(blockTop + numH + titleH + descLineH / 2);
 
-    ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},Num,,0,0,0,,{\\an5\\pos(${W / 2},${numY})\\fad(300,300)}${circled[i]}\n`;
-    ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipT,,0,0,0,,{\\an5\\pos(${W / 2},${titleY})\\fad(300,300)}${titleWrap[0]}\n`;
+    const LX = 120;
+    ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},Num,,0,0,0,,{\\an7\\pos(${LX},${numY})\\fad(300,300)}${circled[i]}\n`;
+    ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipT,,0,0,0,,{\\an7\\pos(${LX},${titleY})\\fad(300,300)}${titleWrap[0]}\n`;
 
     for (let j = 0; j < descWrap.length; j++) {
-      ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipD,,0,0,0,,{\\an5\\pos(${W / 2},${descStartY + j * descLineH})\\fad(300,300)}${descWrap[j]}\n`;
+      ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipD,,0,0,0,,{\\an7\\pos(${LX},${descStartY + j * descLineH})\\fad(300,300)}${descWrap[j]}\n`;
     }
 
     if (exHasContent) {
       const exY = Math.round(blockTop + numH + titleH + descWrap.length * descLineH + exH / 2);
-      ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipEx,,0,0,0,,{\\an5\\pos(${W / 2},${exY})\\fad(300,300)}${"→ " + exWrap[0]}\n`;
+      ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipEx,,0,0,0,,{\\an7\\pos(${LX},${exY})\\fad(300,300)}${"→ " + exWrap[0]}\n`;
     }
   }
 
