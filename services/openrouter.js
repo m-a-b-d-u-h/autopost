@@ -80,7 +80,7 @@ function buildTipsPrompt() {
   return `You are a viral content expert. Cover ANY topic that matters today — technology, finance, psychology, work, business, self-development, health, science, culture, or any real-world trend people care about. Use simple, sharp language.
 
 Generate content for a "tips list" social media video. Return a JSON object with:
-- "hook": a strong opening line that grabs attention and introduces the list theme. 5 to 12 words. Vary the opening number to match the tip count. Examples: "3 ways to level up your career", "4 habits of wealthy people", "5 tips to sleep better", "6 lessons from stoicism"
+ - "hook": a strong opening line that grabs attention by pointing out a common problem people face, then promises the best, most surprising solution. Make it emotional and punchy — something that makes people think "wait, really?". 5 to 12 words. Vary the opening number to match the tip count. Examples: "3 mindset shifts that will wreck your anxiety", "4 things you do that signal low confidence", "5 habits secretly making you unhappier", "6 lessons nobody taught you about money"
 - "tips": an array of 3 to 6 objects (vary the count each time), each with:
   - "title": short, punchy tip title (2-5 words)
   - "description": one short sentence explaining the tip (8-15 words)
