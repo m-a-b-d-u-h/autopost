@@ -115,7 +115,7 @@ export async function generateLessonsVideo({ hook, tips, cta, output }) {
   const ctaLines = wrap(cta || "Follow for daily tips", 16);
   const pfpW = 85, pfpH = 85;
   const pfpX = Math.round((W - pfpW) / 2);
-  const pfpY = 1450;
+  const pfpY = 920;
 
   const hookFontSize = 110;
   const numFontSize = 78;
@@ -146,7 +146,7 @@ ScaledBorderAndShadow: yes
 Format: Name, Fontname, Fontsize, PrimaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Hook,Noto Sans,${hookFontSize},&H00FFFFFF,&H00FFFFFF,&H00000000,-1,0,0,0,100,100,0,0,1,1,0,5,60,60,60,1
 Style: Num,Noto Sans,${numFontSize},${GOLD},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
-Style: TipT,Noto Sans,${titleFontSize},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,1,60,60,60,1
+Style: TipT,Noto Sans,${titleFontSize},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipD,Noto Sans,${descFontSize},${LIGHT},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipEx,Noto Sans,${exFontSize},${GOLD},&H00000000,&H00000000,0,1,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: EndCTA,Noto Sans,${ctaFontSize},${GOLD},&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
@@ -161,11 +161,13 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     const top = contentCenterY - blockH / 2;
     for (let i = 0; i < hookLines.length; i++) {
       const y = Math.round(top + i * hookLineH + hookLineH / 2);
-      ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},Hook,,0,0,0,,{\\an7\\pos(120,${y})\\fad(0,300)}${hookLines[i]}\n`;
+      ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},Hook,,0,0,0,,{\\an5\\pos(${W / 2},${y})\\fad(0,300)}${hookLines[i]}\n`;
     }
     const barY = Math.round(top + hookLines.length * hookLineH + 30);
-    ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},,,0,0,0,,{\\fad(0,300)\\p1\\c${GOLD}\\bord0\\pos(120,${barY})}m 0 0 l 200 0{\\p0}\n`;
+    ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},,,0,0,0,,{\\fad(0,300)\\p1\\c${GOLD}\\bord0\\pos(${(W - 200) / 2},${barY})}m 0 0 l 200 0{\\p0}\n`;
   }
+
+  ass += `Dialogue: 0,${toAssTime(openingEnd)},${toAssTime(endStart)},,,0,0,0,,{\\p1\\c&H00000000&\\bord0\\pos(${pfpX},${pfpY})}m 0 0 l ${pfpW} 0 l ${pfpW} ${pfpH} l 0 ${pfpH}{\\p0}\n`;
 
   for (let i = 0; i < tipCount; i++) {
     const start = openingEnd + i * itemDur;
@@ -183,17 +185,17 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     const titleY = Math.round(blockTop + numH + gapNumTitle + titleH / 2);
     const descStartY = Math.round(blockTop + numH + gapNumTitle + titleH + gapTitleDesc + descLineH / 2);
 
-    const LX = 120;
-    ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},Num,,0,0,0,,{\\an7\\pos(${LX},${numY})\\fad(300,300)}${circled[i]}\n`;
-    ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipT,,0,0,0,,{\\an7\\pos(${LX},${titleY})\\fad(300,300)}${titleWrap[0]}\n`;
+    const CX = W / 2;
+    ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},Num,,0,0,0,,{\\an5\\pos(${CX},${numY})\\fad(300,300)}${circled[i]}\n`;
+    ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipT,,0,0,0,,{\\an5\\pos(${CX},${titleY})\\fad(300,300)}${titleWrap[0]}\n`;
 
     for (let j = 0; j < descWrap.length; j++) {
-      ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipD,,0,0,0,,{\\an7\\pos(${LX},${descStartY + j * descLineH})\\fad(300,300)}${descWrap[j]}\n`;
+      ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipD,,0,0,0,,{\\an5\\pos(${CX},${descStartY + j * descLineH})\\fad(300,300)}${descWrap[j]}\n`;
     }
 
     if (exHasContent) {
       const exY = Math.round(blockTop + numH + gapNumTitle + titleH + gapTitleDesc + descWrap.length * descLineH + gapDescEx + exH / 2);
-      ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipEx,,0,0,0,,{\\an7\\pos(${LX},${exY})\\fad(300,300)}${"→ " + exWrap[0]}\n`;
+      ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipEx,,0,0,0,,{\\an5\\pos(${CX},${exY})\\fad(300,300)}${"→ " + exWrap[0]}\n`;
     }
   }
 
