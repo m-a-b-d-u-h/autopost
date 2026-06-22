@@ -112,7 +112,7 @@ export async function generateTipsVideo({ hook, tips, cta, output }) {
   const circled = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩"];
 
   const hookLines = wrap(hook, 16);
-  const ctaLines = wrap(cta || "Follow for more tips", 16);
+  const ctaLines = wrap(cta || "Follow for daily tips", 16);
   const pfpW = 85, pfpH = 85;
   const pfpX = Math.round((W - pfpW) / 2);
   const pfpY = 1450;
@@ -146,7 +146,8 @@ Style: Num,Noto Sans,${numFontSize},${GOLD},&H00000000,&H00000000,0,0,0,0,100,10
 Style: TipT,Noto Sans,${titleFontSize},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,1,60,60,60,1
 Style: TipD,Noto Sans,${descFontSize},${LIGHT},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipEx,Noto Sans,${exFontSize},${GOLD},&H00000000,&H00000000,0,1,0,0,100,100,0,0,1,0,0,5,60,60,60,1
-Style: EndCTA,Noto Sans,${ctaFontSize},${GOLD},&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,1,60,60,60,1
+Style: EndCTA,Noto Sans,${ctaFontSize},${GOLD},&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
+Style: EndCTASub,Noto Sans,48,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -196,15 +197,12 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
   {
     const blockH = ctaLines.length * ctaLineH;
     const top = contentCenterY - blockH / 2;
-    const pillX = 80;
-    const pillW = W - 160;
-    const pillPad = 30;
-    const pillH = blockH + pillPad * 2;
-    const pillY = Math.round(top - pillPad);
-    ass += `Dialogue: 0,${toAssTime(endStart)},${toAssTime(DUR)},,,0,0,0,,{\\fad(400,0)\\p1\\c&H00000000&\\alpha&H99&\\bord0\\pos(${pillX},${pillY})}m 0 0 l ${pillW} 0 l ${pillW} ${pillH} l 0 ${pillH}{\\p0}\n`;
+    const barY = Math.round(top - 36);
+    ass += `Dialogue: 0,${toAssTime(endStart)},${toAssTime(DUR)},,,0,0,0,,{\\fad(400,0)\\p1\\c${GOLD}\\bord0\\pos(${(W - 200) / 2},${barY})}m 0 0 l 200 0{\\p0}\n`;
     for (let i = 0; i < ctaLines.length; i++) {
       const y = Math.round(top + i * ctaLineH + ctaLineH / 2);
-      ass += `Dialogue: 0,${toAssTime(endStart)},${toAssTime(DUR)},EndCTA,,0,0,0,,{\\an7\\pos(120,${y})\\fad(400,0)}${ctaLines[i]}\n`;
+      const sty = i === 0 ? "EndCTA" : "EndCTASub";
+      ass += `Dialogue: 0,${toAssTime(endStart)},${toAssTime(DUR)},${sty},,0,0,0,,{\\an5\\pos(${W / 2},${y})\\fad(400,0)}${ctaLines[i]}\n`;
     }
   }
 
