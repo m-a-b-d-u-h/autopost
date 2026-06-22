@@ -118,16 +118,19 @@ export async function generateTipsVideo({ hook, tips, cta, output }) {
   const pfpY = 1450;
 
   const hookFontSize = 110;
-  const numFontSize = 66;
-  const titleFontSize = 56;
-  const descFontSize = 36;
-  const exFontSize = 32;
+  const numFontSize = 72;
+  const titleFontSize = 62;
+  const descFontSize = 40;
+  const exFontSize = 36;
   const ctaFontSize = 70;
   const hookLineH = 134;
-  const numH = 76;
-  const titleH = 64;
-  const descLineH = 44;
-  const exH = 40;
+  const numH = 82;
+  const titleH = 70;
+  const descLineH = 48;
+  const exH = 44;
+  const gapNumTitle = 14;
+  const gapTitleDesc = 12;
+  const gapDescEx = 10;
   const ctaLineH = 84;
   const contentCenterY = 680;
   const GOLD = "&H0000D7FF&";
@@ -141,7 +144,7 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Hook,Noto Sans,${hookFontSize},&H00FFFFFF,&H00FFFFFF,&H00000000,-1,0,0,0,100,100,0,0,1,3,0,5,60,60,60,1
+Style: Hook,Noto Sans,${hookFontSize},&H00FFFFFF,&H00FFFFFF,&H00000000,-1,0,0,0,100,100,0,0,1,1,0,5,60,60,60,1
 Style: Num,Noto Sans,${numFontSize},${GOLD},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipT,Noto Sans,${titleFontSize},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,1,60,60,60,1
 Style: TipD,Noto Sans,${descFontSize},${LIGHT},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
@@ -173,12 +176,12 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     const exWrap = wrap(t.example || "", 30);
     const exHasContent = exWrap.length > 0 && exWrap[0].length > 0;
 
-    const blockH = numH + titleH + descWrap.length * descLineH + (exHasContent ? exH : 0);
+    const blockH = numH + gapNumTitle + titleH + gapTitleDesc + descWrap.length * descLineH + (exHasContent ? gapDescEx + exH : 0);
     const blockTop = contentCenterY - blockH / 2;
 
     const numY = Math.round(blockTop + numH / 2);
-    const titleY = Math.round(blockTop + numH + titleH / 2);
-    const descStartY = Math.round(blockTop + numH + titleH + descLineH / 2);
+    const titleY = Math.round(blockTop + numH + gapNumTitle + titleH / 2);
+    const descStartY = Math.round(blockTop + numH + gapNumTitle + titleH + gapTitleDesc + descLineH / 2);
 
     const LX = 120;
     ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},Num,,0,0,0,,{\\an7\\pos(${LX},${numY})\\fad(300,300)}${circled[i]}\n`;
@@ -189,7 +192,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     }
 
     if (exHasContent) {
-      const exY = Math.round(blockTop + numH + titleH + descWrap.length * descLineH + exH / 2);
+      const exY = Math.round(blockTop + numH + gapNumTitle + titleH + gapTitleDesc + descWrap.length * descLineH + gapDescEx + exH / 2);
       ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipEx,,0,0,0,,{\\an7\\pos(${LX},${exY})\\fad(300,300)}${"→ " + exWrap[0]}\n`;
     }
   }
