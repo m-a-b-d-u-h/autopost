@@ -167,8 +167,6 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},,,0,0,0,,{\\fad(0,300)\\p1\\c${GOLD}\\bord0\\pos(${(W - 200) / 2},${barY})}m 0 0 l 200 0{\\p0}\n`;
   }
 
-  ass += `Dialogue: 0,${toAssTime(openingEnd)},${toAssTime(endStart)},,,0,0,0,,{\\p1\\c&H00000000&\\bord0\\pos(${pfpX},${pfpY})}m 0 0 l ${pfpW} 0 l ${pfpW} ${pfpH} l 0 ${pfpH}{\\p0}\n`;
-
   for (let i = 0; i < tipCount; i++) {
     const start = openingEnd + i * itemDur;
     const end = i === tipCount - 1 ? endStart : openingEnd + (i + 1) * itemDur;
@@ -246,18 +244,18 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     flt.push(`${ci}concat=n=${bgFiles.length}:v=1:a=0[bg]`);
     flt.push(`[bg]drawbox=color=black@0.45:w=iw:h=ih:t=fill[dd]`);
     flt.push(`[${pfpIdx}:v]scale=${pfpW}:${pfpH}[pp]`);
-    flt.push(`[dd][pp]overlay=x=${pfpX}:y=${pfpY}[mm]`);
+    flt.push(`[dd][pp]overlay=x=${pfpX}:y=${pfpY}:enable='between(t,0,${openingEnd})+between(t,${endStart},${DUR})'[mm]`);
     flt.push(`[mm]ass=${assRel}:fontsdir=assets/fonts[v]`);
   } else if (hasImg) {
     flt.push(`[${bgStart}:v]scale=${W}:${H}:force_original_aspect_ratio=increase,crop=${W}:${H}[bg]`);
     flt.push(`[bg]drawbox=color=black@0.45:w=iw:h=ih:t=fill[dd]`);
     flt.push(`[dd][${colorIdx}:v]overlay=0:0[gg]`);
     flt.push(`[${pfpIdx}:v]scale=${pfpW}:${pfpH}[pp]`);
-    flt.push(`[gg][pp]overlay=x=${pfpX}:y=${pfpY}[mm]`);
+    flt.push(`[gg][pp]overlay=x=${pfpX}:y=${pfpY}:enable='between(t,0,${openingEnd})+between(t,${endStart},${DUR})'[mm]`);
     flt.push(`[mm]ass=${assRel}:fontsdir=assets/fonts[v]`);
   } else {
     flt.push(`[${pfpIdx}:v]scale=${pfpW}:${pfpH}[pp]`);
-    flt.push(`[${colorIdx}:v][pp]overlay=x=${pfpX}:y=${pfpY}[mm]`);
+    flt.push(`[${colorIdx}:v][pp]overlay=x=${pfpX}:y=${pfpY}:enable='between(t,0,${openingEnd})+between(t,${endStart},${DUR})'[mm]`);
     flt.push(`[mm]ass=${assRel}:fontsdir=assets/fonts[v]`);
   }
 
