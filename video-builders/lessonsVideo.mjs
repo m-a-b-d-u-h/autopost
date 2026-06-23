@@ -70,19 +70,8 @@ async function findBackground(dur = 30) {
   if (!existsSync(BG_DIR)) return null;
   const files = readdirSync(BG_DIR).filter(f => /\.(mp4|mov|avi|mkv|webm)$/i.test(f));
   if (!files.length) return null;
-  const picks = [];
-  let total = 0;
-  const used = new Set();
-  while (total < dur) {
-    const avail = files.filter(f => !used.has(f));
-    if (!avail.length) break;
-    const f = avail[Math.floor(Math.random() * avail.length)];
-    const fp = join(BG_DIR, f);
-    picks.push(fp);
-    total += await getCachedDuration(fp);
-    used.add(f);
-  }
-  return picks;
+  const f = files[Math.floor(Math.random() * files.length)];
+  return join(BG_DIR, f);
 }
 
 function isVideo(f) {
@@ -261,7 +250,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
       }
     }
 
-    const counterY = Math.round(exLastY + counterH / 2 + 45);
+    const counterY = Math.round(exLastY + counterH / 2 + 40);
     ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},Num,,0,0,0,,{\\an4\\pos(${MX},${counterY})\\fad(300,300)\\fs56\\b1}${i + 1}/${lessonCount}\n`;
   }
 
@@ -278,16 +267,16 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
   const inp = [];
   let idx = 0;
-  const hasVid = bgFiles && bgFiles.length > 0 && bgFiles.every(f => isVideo(f));
-  const hasImg = bgFiles && bgFiles.length > 0 && !isVideo(bgFiles[0]);
+  const hasVid = bgFiles && isVideo(bgFiles);
+  const hasImg = bgFiles && !isVideo(bgFiles);
 
   let bgStart = -1;
   if (hasVid) {
     bgStart = idx;
-    for (const f of bgFiles) { inp.push("-i", f); idx++; }
+    inp.push("-stream_loop", "-1", "-i", bgFiles); idx++;
   } else if (hasImg) {
     bgStart = idx;
-    inp.push("-loop", "1", "-i", bgFiles[0]); idx++;
+    inp.push("-loop", "1", "-i", bgFiles); idx++;
   }
 
   inp.push("-f", "lavfi", "-i", `color=c=#0a0a0a:s=${W}x${H}:r=25`);
@@ -303,10 +292,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
   const assRel = join(".", "output", `${ts}.ass`).replace(/\\/g, "/");
 
   if (hasVid) {
-    for (let i = 0; i < bgFiles.length; i++)
-      flt.push(`[${bgStart + i}:v]scale=${W}:${H}:force_original_aspect_ratio=increase,crop=${W}:${H},setsar=1[b${i}]`);
-    const ci = bgFiles.map((_, i) => `[b${i}]`).join("");
-    flt.push(`${ci}concat=n=${bgFiles.length}:v=1:a=0[bg]`);
+    flt.push(`[${bgStart}:v]scale=${W}:${H}:force_original_aspect_ratio=increase,crop=${W}:${H},setsar=1[bg]`);
     flt.push(`[bg]drawbox=color=black@0.45:w=iw:h=ih:t=fill[dd]`);
     flt.push(`[${pfpIdx}:v]split=2[raw1][raw2]`);
     flt.push(`[raw1]scale=${pfpW}:${pfpH},format=rgba,fade=t=out:st=${openingEnd - 0.3}:d=0.3:alpha=1[pfpA]`);
