@@ -86,13 +86,12 @@ function toAssTime(s) {
   return `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}.${String(cs).padStart(2, "0")}`;
 }
 
-const CODEPOINTS_URL = "https://raw.githubusercontent.com/google/material-design-icons/master/variablefont/MaterialSymbolsOutlined%5BFILL,GRAD,opsz,wght%5D.codepoints";
+const CODEPOINTS_PATH = join(__dirname, "..", "assets", "fonts", "MaterialSymbolsOutlined.codepoints");
 let codepointsCache = null;
 
 async function getCodepoints() {
   if (codepointsCache) return codepointsCache;
-  const res = await fetch(CODEPOINTS_URL);
-  const text = await res.text();
+  const text = readFileSync(CODEPOINTS_PATH, "utf8");
   const map = new Map();
   for (const line of text.trim().split("\n")) {
     const [name, hex] = line.trim().split(" ");
