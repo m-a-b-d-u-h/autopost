@@ -131,7 +131,7 @@ export async function generateLessonsVideo({ hook, hook_desc, hook_icon, lesson,
   const hookDescLines = hook_desc ? wrap(hook_desc, 30) : [];
   const ctaLines = wrap(cta || "Follow for daily tips", 30);
 
-  const MX = 150;
+  const MX = 180;
   const GOLD = "&H0000D7FF&";
   const LIGHT = "&H00D0D0D0&";
 
