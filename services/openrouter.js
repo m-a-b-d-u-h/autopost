@@ -1,9 +1,8 @@
 const MODEL = process.env.OPENROUTER_MODEL || "nvidia/nemotron-3-ultra-550b-a55b:free";
 
-export async function generateContent(type = "quote") {
-  const prompt = type === "lessons" ? buildLessonsPrompt() : buildPrompt();
-  const text = await askAI(prompt);
-  return type === "lessons" ? parseLessonsContent(text) : parseContent(text);
+export async function generateContent() {
+  const text = await askAI(buildLessonsPrompt());
+  return parseLessonsContent(text);
 }
 
 async function askAI(prompt, retries = 3) {
@@ -47,33 +46,6 @@ async function askAI(prompt, retries = 3) {
   } finally {
     clearTimeout(timeout);
   }
-}
-
-function buildPrompt() {
-  return `You are a viral content expert. Cover ANY topic that matters today — technology, finance, psychology, work, business, self-development, health, science, culture, or any real-world trend people care about. Don't be stiff or generic. Use simple, sharp language that hits hard. Strong hook is mandatory. Follow and reference current news and events happening around the world right now — don't create content in a vacuum, tie it to what's actually happening today. Use reality-based insights and accurate data from real research or proven facts.
-
-Generate content for an inspirational quote social media video. Return a JSON object with:
-- "quote": a deeply practical and relatable truth that people can immediately use in their daily lives. Talk about real human struggles — money, relationships, career, self-doubt, health, modern life pressure. It should make people think "this is exactly what I needed to hear". Simple conversational language, no poetry or fluff. Make it easy to understand, hard to forget, and genuinely helpful. Keep up with current trends. 10 to 30 words.
-- "source": the person who said the quote (first and last name)
-- "description": a 1-2 sentence explanation of why this quote matters or how to apply it
-- "cta": a genuinely funny call-to-action that makes people laugh or at least smirk. Still classy, but actually funny — surprise the viewer. Ask viewers to follow, like, tag, save, share, or comment with a humorous twist. Examples: "Follow before the algorithm forgets you exist", "Save this — your attention span will thank you later", "Tag someone who desperately needs this", "Like if you're smarter than you look", "Share this and look like a genius". Vary the action every time. Keep it under 12 words. Make it actually funny, not just polite.
-- "caption": one short paragraph (2-3 sentences) for a social media caption. Make it feel current and connected to real life — reference the vibe of what's happening in the world right now if it fits. Do not include hashtags. Do not repeat the quote verbatim. Describe the overall theme or message in fresh, sharp language. End with #1section.
-
-Make the quote original-sounding, not overly clich\u00e9. Use quotes from modern thinkers across any field — tech, finance, science, philosophy, business, psychology — relevant to today's challenges. The quote should feel like a cold hard truth, not generic inspiration. English only. Return ONLY valid JSON.`;
-}
-
-function parseContent(text) {
-  const json = text.replace(/```json\s*|\s*```/g, "").trim();
-  const parsed = JSON.parse(json);
-  return {
-    type: "quote",
-    quote: parsed.quote,
-    source: parsed.source,
-    description: parsed.description,
-    cta: parsed.cta || "Follow for more daily wisdom like this",
-    caption: parsed.caption || parsed.description + " #1section",
-    footer: "1section.com",
-  };
 }
 
 function buildLessonsPrompt() {

@@ -19,7 +19,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/videos", express.static(join(__dirname, "output")));
 app.use("/music", express.static(join(__dirname, "assets", "music")));
 
-const TYPES = ["quote", "lessons"];
 const PUBLISH_PATH = join(__dirname, "publish-status.json");
 
 function getVideos() {
@@ -63,7 +62,7 @@ app.get("/", (req, res) => {
     }).map((v) => pubStatus[v.file]?.type || v.type)
   );
   const schedule = getSchedule();
-  res.render("index", { videos, types: TYPES, typesPublished: publishedWithTypes.size, schedule, pubStatus });
+  res.render("index", { videos, types: ["lessons"], typesPublished: publishedWithTypes.size, schedule, pubStatus });
 });
 
 app.get("/health", (req, res) => {
@@ -83,8 +82,7 @@ app.get("/channels", async (req, res) => {
 
 app.post("/generate", async (req, res) => {
   try {
-    const type = req.body.type || undefined;
-    const result = await runPipeline(type);
+    const result = await runPipeline();
     res.json({
       success: true,
       type: result.content.type,

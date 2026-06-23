@@ -6,21 +6,7 @@ import { generateVideo } from "./services/videogen.js";
 import { getChannels, createPost } from "./services/buffer.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const STATE_PATH = join(__dirname, "rotation-state.json");
 const PUBLISH_PATH = join(__dirname, "publish-status.json");
-const TYPES = ["quote", "lessons"];
-
-function getRotation() {
-  if (!existsSync(STATE_PATH)) return 0;
-  return JSON.parse(readFileSync(STATE_PATH, "utf-8")).index ?? 0;
-}
-
-function advanceRotation() {
-  const cur = getRotation();
-  const next = (cur + 1) % TYPES.length;
-  writeFileSync(STATE_PATH, JSON.stringify({ index: next }));
-  return next;
-}
 
 function loadPublishStatus() {
   try {
@@ -35,13 +21,11 @@ function savePublishStatus(status) {
   writeFileSync(PUBLISH_PATH, JSON.stringify(status, null, 2));
 }
 
-export async function runPipeline(typeOverride) {
-  const type = typeOverride || TYPES[getRotation()];
-  console.log(`[pipeline] Starting: ${type}`);
+export async function runPipeline() {
+  console.log(`[pipeline] Starting: lessons`);
 
-  const content = await generateContent(type);
-  console.log(`[pipeline] Content generated (${type})`);
-  if (!typeOverride) advanceRotation();
+  const content = await generateContent();
+  console.log(`[pipeline] Content generated (lessons)`);
 
   const videoPath = await generateVideo(content);
   console.log(`[pipeline] Video rendered: ${videoPath}`);
@@ -60,7 +44,7 @@ export async function runPipeline(typeOverride) {
     const results = [];
     for (const ch of channels) {
       try {
-        const videoTitle = content.title || content.source || content.hook || "1section";
+        const videoTitle = content.hook || "1section";
         await createPost(token, ch.id, content.caption, videoUrl, ch.service, videoTitle);
         results.push({ channel: ch.name, service: ch.service, ok: true });
         console.log(`[pipeline] Posted to ${ch.name} (${ch.service})`);
@@ -75,7 +59,6 @@ export async function runPipeline(typeOverride) {
     status[videoFile] = {
       type: content.type,
       caption: content.caption,
-      source: content.source,
       results,
       date: new Date().toISOString(),
     };
@@ -109,7 +92,7 @@ export async function republishVideo(videoFile) {
 
     try {
       const caption = entry?.caption || `New video from 1section ${videoUrl}`;
-      await createPost(token, ch.id, caption, videoUrl, ch.service, entry?.source || "1section");
+      await createPost(token, ch.id, caption, videoUrl, ch.service, entry?.hook || "1section");
       results.push({ channel: ch.name, service: ch.service, ok: true });
       console.log(`[pipeline] Posted to ${ch.name} (${ch.service})`);
     } catch (err) {
