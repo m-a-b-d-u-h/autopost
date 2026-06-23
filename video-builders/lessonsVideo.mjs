@@ -111,12 +111,12 @@ function hexToAssColor(hex) {
   return `&H00${b.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${r.toString(16).padStart(2, "0")}&`;
 }
 
-export async function generateLessonsVideo({ hook, hook_icon, lesson, cta, output }) {
+export async function generateLessonsVideo({ hook, hook_desc, hook_icon, lesson, cta, output }) {
   const lessonCount = lesson.length;
   const SLIDE_DUR = 5;
-  const openingEnd = 4;
+  const openingEnd = 5;
   const endStart = openingEnd + lessonCount * SLIDE_DUR;
-  const DUR = endStart + 4;
+  const DUR = endStart + 5;
 
   const music = findMusic();
   const bgFiles = await findBackground(DUR);
@@ -128,9 +128,15 @@ export async function generateLessonsVideo({ hook, hook_icon, lesson, cta, outpu
   const iconMap = (map, name) => map.get(name) || map.get("lightbulb") || "\ue90f";
 
   const hookLines = wrap(hook.replace(/\b\w/g, c => c.toUpperCase()), 16);
+  const hookDescLines = hook_desc ? wrap(hook_desc, 30) : [];
   const ctaLines = wrap(cta || "Follow for daily tips", 30);
+
+  const MX = 140;
+  const GOLD = "&H0000D7FF&";
+  const LIGHT = "&H00D0D0D0&";
+
   const pfpW = 85, pfpH = 85;
-  const pfpX = Math.round((W - pfpW) / 2);
+  const pfpX = MX;
   const pfpW_cta = 110, pfpH_cta = 110;
   const pfpX_cta = Math.round((W - pfpW_cta) / 2);
 
@@ -141,7 +147,9 @@ export async function generateLessonsVideo({ hook, hook_icon, lesson, cta, outpu
   const descFontSize = 62;
   const exFontSize = 58;
   const ctaFontSize = 75;
-  const hookLineH = 134;
+  const hookLineH = 115;
+  const hookDescFontSize = 54;
+  const hookDescLineH = 64;
   const numH = 98;
   const titleH = 86;
   const descLineH = 72;
@@ -150,16 +158,16 @@ export async function generateLessonsVideo({ hook, hook_icon, lesson, cta, outpu
   const gapTitleDesc = 14;
   const gapDescEx = 34;
   const ctaLineH = 89;
-  const MX = 140;
-  const GOLD = "&H0000D7FF&";
-  const LIGHT = "&H00D0D0D0&";
   const contentCenterY = 855;
-  const lessonCtaCenterY = contentCenterY + 100;
-  const ctaCenterY = lessonCtaCenterY + 100;
+  const lessonCtaCenterY = contentCenterY + 110;
+  const ctaCenterY = lessonCtaCenterY + 90;
 
   // Hook TEXT centered at contentCenterY, PFP below gold bar
-  const hookBlockH = hookLines.length * hookLineH;
+  const hasHookDesc = hookDescLines.length > 0;
+  const hookDescBlockH = hasHookDesc ? 20 + hookDescLines.length * hookDescLineH : 0;
+  const hookBlockH = hookLines.length * hookLineH + hookDescBlockH;
   const hookTxtTop = contentCenterY - hookBlockH / 2 + 60;
+  const hookDescTxtTop = hookTxtTop + hookLines.length * hookLineH + 20;
   const hookBarY = Math.round(hookTxtTop + hookBlockH + 30);
   const pfpY_open = Math.round(hookBarY + 20 + pfpH / 2);
 
@@ -178,6 +186,7 @@ ScaledBorderAndShadow: yes
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Hook,Noto Sans,${hookFontSize},&H00FFFFFF,&H00FFFFFF,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
+Style: HookDesc,Noto Sans,${hookDescFontSize},${LIGHT},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: Num,Noto Sans,${numFontSize},${GOLD},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipIcon,Material Symbols Outlined,${iconFontSize},${GOLD},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipT,Noto Sans,${titleFontSize},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
@@ -197,6 +206,12 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     for (let i = 0; i < hookLines.length; i++) {
       const y = Math.round(top + i * hookLineH + hookLineH / 2);
       ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},Hook,,0,0,0,,{\\an4\\pos(${MX},${y})\\fad(0,300)}${hookLines[i]}\n`;
+    }
+    if (hasHookDesc) {
+      for (let i = 0; i < hookDescLines.length; i++) {
+        const y = Math.round(hookDescTxtTop + i * hookDescLineH + hookDescLineH / 2);
+        ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},HookDesc,,0,0,0,,{\\an4\\pos(${MX},${y})\\fad(0,300)}${hookDescLines[i]}\n`;
+      }
     }
     ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},,,0,0,0,,{\\fad(0,300)\\p1\\c${GOLD}\\bord0\\pos(${(W - 200) / 2},${hookBarY})}m 0 0 l 200 0{\\p0}\n`;
   }

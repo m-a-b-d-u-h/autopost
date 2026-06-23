@@ -1,6 +1,7 @@
 import { generateLessonsVideo } from "./video-builders/lessonsVideo.mjs";
 const out = await generateLessonsVideo({
   hook: "6 assets that pay you forever without working harder",
+  hook_desc: "Most people trade time for money, but the wealthy own assets that never sleep.",
   lesson: [
     { icon: "bolt", color: "#FFD700", title: "Your Skills Compound Over Time Into Something Massive", description: "One skill mastered early pays dividends every single year without extra effort or time investment from you", example: "A developer who learned AI automation in 2023 is now earning 3x while working half the hours they used to" },
     { icon: "inventory_2", color: "#4FC3F7", title: "Digital Products", description: "Create once, sell infinitely — no inventory, no shipping, no hourly trade for money like a regular job", example: "A $47 online course about budgeting has sold 2,000 times while the creator sleeps on vacation in Bali" },

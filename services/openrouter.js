@@ -83,6 +83,7 @@ Generate content for a "numbered lessons" social media video. Each lesson reveal
 
 Return a JSON object with:
 - "hook": a numbered opening line that grabs attention by pointing at a specific, detailed problem or opportunity — NOT a generic one. Be precise and concrete: name a real trend, statistic, behavior, or market shift. Avoid vague phrases like "things you should know" or "ways to succeed". Instead, be ultra-specific: "6 AI tools replacing mid-level marketers in 2026", "4 tax loopholes freelancers ignore every year", "5 rare skills that pay $200k+ remotely". 5 to 12 words. Make it forward-looking or eye-opening. Examples: "5 booming businesses you must try in 2026", "6 assets that pay you forever", "4 signs you're financially smarter than you think", "3 life levels you need to understand", "6 money lessons most people learn too late", "5 hidden habits that accelerate success"
+- "hook_desc": a one-sentence description that expands on the hook and sets up what the lessons will cover. Think of it as the "big picture" context. 8-15 words. Example for "6 assets that pay you forever": "Most people trade time for money, but the wealthy own assets that never sleep." Example for "5 booming businesses in 2026": "Old industries are crumbling while new ones print millionaires overnight." Keep it sharp, not generic.
 - "hook_icon": a Material Symbols Outlined icon name in snake_case that PERFECTLY matches the hook theme. DO NOT use generic icons — pick one that directly visualizes the hook subject. Examples: hook about money → "payments" or "attach_money", hook about growth → "trending_up", hook about mindset → "psychology" or "lightbulb", hook about business → "business" or "rocket_launch", hook about real estate → "house" or "apartment". Always think: what single icon best represents this exact hook?
 - "lesson": an array of 3 to 6 objects (vary the count to match hook number), each with:
   - "icon": a Material Symbols Outlined icon name in snake_case that PERFECTLY represents the FULL meaning of the lesson's title, description, and example combined. Read the entire lesson content first, understand its core message, then pick the single most fitting icon. There are 1000+ available icons in the library — be precise and creative. NEVER reuse an icon across different lessons (every icon must be unique). NEVER use generic fallback icons like "lightbulb" or "star" unless no other icon fits perfectly. Examples: passive income → "account_balance", time → "schedule", networks → "hub", automation → "smart_toy", content → "article", royalties → "receipt", growth → "trending_up", protection → "shield", learning → "school", location → "location_on", health → "monitor_heart", data → "bar_chart".
@@ -113,6 +114,7 @@ function parseLessonsContent(text) {
   return {
     type: "lessons",
     hook: titleCase(parsed.hook),
+    hook_desc: parsed.hook_desc || "",
     hook_icon: parsed.hook_icon || "auto_awesome",
     lesson,
     cta: parsed.cta || "Follow for more revelations",
