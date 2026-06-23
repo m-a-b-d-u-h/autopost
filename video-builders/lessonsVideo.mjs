@@ -4,7 +4,7 @@ import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const W = 1080, H = 1920, DUR = 30;
+const W = 1080, H = 1920;
 const BG_DIR = join(__dirname, "..", "assets", "backgrounds");
 const PROFILE_PNG = join(__dirname, "..", "assets", "logo", "i.png");
 const MUSIC_DIR = join(__dirname, "..", "assets", "music");
@@ -66,14 +66,14 @@ function getVideoDuration(file) {
   } catch { return 10; }
 }
 
-async function findBackground() {
+async function findBackground(dur = 30) {
   if (!existsSync(BG_DIR)) return null;
   const files = readdirSync(BG_DIR).filter(f => /\.(mp4|mov|avi|mkv|webm)$/i.test(f));
   if (!files.length) return null;
   const picks = [];
   let total = 0;
   const used = new Set();
-  while (total < DUR) {
+  while (total < dur) {
     const avail = files.filter(f => !used.has(f));
     if (!avail.length) break;
     const f = avail[Math.floor(Math.random() * avail.length)];
@@ -123,16 +123,16 @@ function hexToAssColor(hex) {
 }
 
 export async function generateLessonsVideo({ hook, lesson, cta, output }) {
+  const lessonCount = lesson.length;
+  const SLIDE_DUR = 5;
+  const openingEnd = 4;
+  const endStart = openingEnd + lessonCount * SLIDE_DUR;
+  const DUR = endStart + 4;
+
   const music = findMusic();
-  const bgFiles = await findBackground();
+  const bgFiles = await findBackground(DUR);
   const ts = Date.now();
   const assFile = join(OUT_DIR, `${ts}.ass`);
-
-  const lessonCount = lesson.length;
-  const openingEnd = 5;
-  const endStart = DUR - 5;
-  const tipsDuration = endStart - openingEnd;
-  const itemDur = Math.floor(tipsDuration / Math.max(lessonCount, 1));
 
   const cpMap = await getCodepoints();
 
@@ -214,8 +214,8 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
   // --- LESSON ITEMS (each centered at H/2) ---
   for (let i = 0; i < lessonCount; i++) {
-    const start = openingEnd + i * itemDur;
-    const end = i === lessonCount - 1 ? endStart : openingEnd + (i + 1) * itemDur;
+    const start = openingEnd + i * SLIDE_DUR;
+    const end = openingEnd + (i + 1) * SLIDE_DUR;
     const t = lesson[i];
     const titleWrap = wrap(t.title.replace(/\b\w/g, c => c.toUpperCase()), 22);
     const descSentences = t.description.split(/\.\s+/).filter(s => s.trim().length > 0).map(s => wrap(s.trim().replace(/\.$/, "") + ".", 30));
@@ -268,7 +268,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     ass += `Dialogue: 0,${toAssTime(endStart)},${toAssTime(DUR)},,,0,0,0,,{\\fad(400,0)\\p1\\c${GOLD}\\bord0\\pos(${(W - 200) / 2},${ctaBarY})}m 0 0 l 200 0{\\p0}\n`;
     for (let i = 0; i < ctaLines.length; i++) {
       const y = Math.round(ctaTxtTop + i * ctaLineH + ctaLineH / 2);
-      ass += `Dialogue: 0,${toAssTime(endStart)},${toAssTime(DUR)},EndCTA,,0,0,0,,{\\an4\\pos(${MX},${y})\\fad(400,0)}${ctaLines[i]}\n`;
+      ass += `Dialogue: 0,${toAssTime(endStart)},${toAssTime(DUR)},EndCTA,,0,0,0,,{\\an5\\pos(${W/2},${y})\\fad(400,0)}${ctaLines[i]}\n`;
     }
   }
 
