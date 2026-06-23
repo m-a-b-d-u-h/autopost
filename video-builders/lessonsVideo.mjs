@@ -261,7 +261,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
       }
     }
 
-    const counterY = Math.round(exLastY + counterH / 2 + 105);
+    const counterY = Math.round(exLastY + counterH / 2 + 45);
     ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},Num,,0,0,0,,{\\an4\\pos(${MX},${counterY})\\fad(300,300)\\fs56\\b1}${i + 1}/${lessonCount}\n`;
   }
 
