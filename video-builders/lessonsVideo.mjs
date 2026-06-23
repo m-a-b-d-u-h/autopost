@@ -146,25 +146,25 @@ export async function generateLessonsVideo({ hook, hook_icon, lesson, cta, outpu
   const pfpX_cta = Math.round((W - pfpW_cta) / 2);
 
   const hookFontSize = 110;
-  const numFontSize = 78;
-  const iconFontSize = 120;
-  const titleFontSize = 68;
-  const descFontSize = 52;
-  const exFontSize = 48;
-  const ctaFontSize = 70;
+  const numFontSize = 88;
+  const iconFontSize = 130;
+  const titleFontSize = 78;
+  const descFontSize = 62;
+  const exFontSize = 58;
+  const ctaFontSize = 75;
   const hookLineH = 134;
-  const numH = 88;
-  const titleH = 76;
-  const descLineH = 62;
-  const exH = 56;
+  const numH = 98;
+  const titleH = 86;
+  const descLineH = 72;
+  const exH = 66;
   const gapNumTitle = 16;
   const gapTitleDesc = 14;
   const gapDescEx = 34;
-  const ctaLineH = 84;
+  const ctaLineH = 89;
   const MX = 140;
   const GOLD = "&H0000D7FF&";
   const LIGHT = "&H00D0D0D0&";
-  const contentCenterY = 840;
+  const contentCenterY = 855;
   const lessonCtaCenterY = contentCenterY + 100;
   const ctaCenterY = lessonCtaCenterY + 100;
 
@@ -178,7 +178,7 @@ export async function generateLessonsVideo({ hook, hook_icon, lesson, cta, outpu
   const ctaBlockH = ctaLines.length * ctaLineH;
   const ctaTxtTop = ctaCenterY - ctaBlockH / 2;
   const ctaBarY = Math.round(ctaTxtTop - 36);
-  const pfpY_cta = Math.round(ctaBarY - 50 - pfpH_cta / 2);
+  const pfpY_cta = Math.round(ctaBarY - 50 - pfpH_cta / 2 - 30);
 
   let ass = `[Script Info]
 ScriptType: v4.00+
@@ -229,7 +229,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     const blockH = numH + gapNumTitle + titleH + gapTitleDesc + descTotalLines * descLineH + descGaps * descLineH + (exHasContent ? gapDescEx + exLines * exH : 0) + counterH;
     const blockTop = lessonCtaCenterY - blockH / 2;
 
-    const numY = Math.round(blockTop + numH / 2 - 75);
+    const numY = Math.round(blockTop + numH / 2 - 45);
     const titleY = Math.round(blockTop + numH + gapNumTitle + titleH / 2);
     const descStartY = Math.round(blockTop + numH + gapNumTitle + titleH + gapTitleDesc + descLineH / 2);
 
@@ -261,7 +261,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
       }
     }
 
-    const counterY = Math.round(exLastY + counterH / 2 + 136);
+    const counterY = Math.round(exLastY + counterH / 2 + 105);
     ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},Num,,0,0,0,,{\\an4\\pos(${MX},${counterY})\\fad(300,300)\\fs56\\b1}${i + 1}/${lessonCount}\n`;
   }
 
@@ -310,7 +310,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     flt.push(`[bg]drawbox=color=black@0.45:w=iw:h=ih:t=fill[dd]`);
     flt.push(`[${pfpIdx}:v]split=2[raw1][raw2]`);
     flt.push(`[raw1]scale=${pfpW}:${pfpH},format=rgba,fade=t=out:st=${openingEnd - 0.3}:d=0.3:alpha=1[pfpA]`);
-    flt.push(`[raw2]scale=${pfpW_cta}:${pfpH_cta},format=rgba,fade=t=in:st=${endStart}:d=0.3:alpha=1,fade=t=out:st=${DUR - 0.3}:d=0.3:alpha=1[pfpB]`);
+    flt.push(`[raw2]scale=${pfpW_cta}:${pfpH_cta},format=rgba,fade=t=in:st=${endStart}:d=0.3:alpha=1[pfpB]`);
     flt.push(`[dd][pfpA]overlay=x=${pfpX}:y=${pfpY_open}:enable='between(t,0,${openingEnd})'[tmp]`);
     flt.push(`[tmp][pfpB]overlay=x=${pfpX_cta}:y=${pfpY_cta}:enable='between(t,${endStart},${DUR})'[mm]`);
     flt.push(`[mm]ass=${assRel}:fontsdir=assets/fonts[v]`);
@@ -320,14 +320,14 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     flt.push(`[dd][${colorIdx}:v]overlay=0:0[gg]`);
     flt.push(`[${pfpIdx}:v]split=2[raw1][raw2]`);
     flt.push(`[raw1]scale=${pfpW}:${pfpH},format=rgba,fade=t=out:st=${openingEnd - 0.3}:d=0.3:alpha=1[pfpA]`);
-    flt.push(`[raw2]scale=${pfpW_cta}:${pfpH_cta},format=rgba,fade=t=in:st=${endStart}:d=0.3:alpha=1,fade=t=out:st=${DUR - 0.3}:d=0.3:alpha=1[pfpB]`);
+    flt.push(`[raw2]scale=${pfpW_cta}:${pfpH_cta},format=rgba,fade=t=in:st=${endStart}:d=0.3:alpha=1[pfpB]`);
     flt.push(`[gg][pfpA]overlay=x=${pfpX}:y=${pfpY_open}:enable='between(t,0,${openingEnd})'[tmp]`);
     flt.push(`[tmp][pfpB]overlay=x=${pfpX_cta}:y=${pfpY_cta}:enable='between(t,${endStart},${DUR})'[mm]`);
     flt.push(`[mm]ass=${assRel}:fontsdir=assets/fonts[v]`);
   } else {
     flt.push(`[${pfpIdx}:v]split=2[raw1][raw2]`);
     flt.push(`[raw1]scale=${pfpW}:${pfpH},format=rgba,fade=t=out:st=${openingEnd - 0.3}:d=0.3:alpha=1[pfpA]`);
-    flt.push(`[raw2]scale=${pfpW_cta}:${pfpH_cta},format=rgba,fade=t=in:st=${endStart}:d=0.3:alpha=1,fade=t=out:st=${DUR - 0.3}:d=0.3:alpha=1[pfpB]`);
+    flt.push(`[raw2]scale=${pfpW_cta}:${pfpH_cta},format=rgba,fade=t=in:st=${endStart}:d=0.3:alpha=1[pfpB]`);
     flt.push(`[${colorIdx}:v][pfpA]overlay=x=${pfpX}:y=${pfpY_open}:enable='between(t,0,${openingEnd})'[tmp]`);
     flt.push(`[tmp][pfpB]overlay=x=${pfpX_cta}:y=${pfpY_cta}:enable='between(t,${endStart},${DUR})'[mm]`);
     flt.push(`[mm]ass=${assRel}:fontsdir=assets/fonts[v]`);
