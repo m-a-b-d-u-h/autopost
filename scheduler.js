@@ -38,7 +38,7 @@ function stopJobs() {
 function startJobs(crons) {
   for (const expr of crons) {
     const j = cron.schedule(expr, () => {
-      console.log(`[scheduler] Trigger at ${new Date().toISOString()}`);
+      console.log(`[scheduler] Trigger at ${new Date().toLocaleString("id-ID")}`);
       runPipeline().catch((err) => {
         console.error(`[scheduler] Error:`, err.message);
       });

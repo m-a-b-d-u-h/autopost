@@ -60,7 +60,7 @@ export async function runPipeline() {
       type: content.type,
       caption: content.caption,
       results,
-      date: new Date().toISOString(),
+      date: new Date().toLocaleString("id-ID"),
     };
     savePublishStatus(status);
   } else {
@@ -101,7 +101,7 @@ export async function republishVideo(videoFile) {
     }
   }
 
-  status[videoFile] = { ...(entry || {}), results, date: new Date().toISOString() };
+  status[videoFile] = { ...(entry || {}), results, date: new Date().toLocaleString("id-ID") };
   savePublishStatus(status);
   return results;
 }

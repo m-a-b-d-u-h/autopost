@@ -33,7 +33,7 @@ function getVideos() {
           file: f,
           type,
           size: (st.size / 1024).toFixed(0) + " KB",
-          date: st.mtime.toISOString().slice(0, 10) + " " + st.mtime.toTimeString().slice(0, 5),
+          date: st.mtime.toLocaleDateString("id-ID") + " " + st.mtime.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
           mtime: st.mtimeMs,
         };
       })
