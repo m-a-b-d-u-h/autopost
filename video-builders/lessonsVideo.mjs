@@ -109,7 +109,39 @@ export async function generateLessonsVideo({ hook, tips, cta, output }) {
   const tipsDuration = endStart - openingEnd;
   const itemDur = Math.floor(tipsDuration / Math.max(tipCount, 1));
 
-  const circled = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩"];
+  const emojiToFa = {
+    "💡": "\uf0eb", "💰": "\uf53a", "🚀": "\uf135", "⚡": "\uf0e7",
+    "🌍": "\uf0ac", "📈": "\uf201", "📚": "\uf518", "📖": "\uf518",
+    "🤝": "\uf2b5", "⚙": "\uf013", "🕊": "\uf4ba", "❤": "\uf004",
+    "⭐": "\uf005", "✅": "\uf00c", "🎯": "\uf140", "🔥": "\uf06d",
+    "💎": "\uf3a5", "🏆": "\uf091", "📊": "\ue473", "🔑": "\uf084",
+    "🎓": "\uf19d", "💻": "\uf109", "📱": "\uf3ce", "🌱": "\uf4d8",
+    "🍀": "\uf4d8", "💪": "\uf6de", "🧠": "\uf5dc", "👁": "\uf06e",
+    "🛡": "\uf132", "⏰": "\uf017", "🔒": "\uf023", "🎨": "\uf53f",
+    "🎵": "\uf001", "🔔": "\uf0f3", "📝": "\uf304", "💬": "\uf075",
+    "👥": "\uf0c0", "🤖": "\uf544", "🔄": "\uf2f1", "📌": "\uf08d",
+    "🎬": "\uf03d", "🔧": "\uf0ad", "🛠": "\uf0ad", "📦": "\uf466",
+    "💊": "\uf46b", "🏠": "\uf015", "✈": "\uf072", "🚗": "\uf1b9",
+    "👑": "\uf521", "🎉": "\uf005", "🧩": "\uf12e", "⚖": "\uf24e",
+    "🖥": "\ue163", "☕": "\uf7b6", "⏳": "\uf254", "🧲": "\uf076",
+    "🎧": "\uf025", "🥇": "\uf5a2", "🎁": "\uf06b", "🔗": "\uf0c1",
+    "📉": "\uf201",
+    "📜": "\uf70e", "💼": "\uf0b1", "💳": "\uf09d", "💵": "\uf0d6",
+    "📅": "\uf133", "🏦": "\uf19c", "📋": "\uf328", "🔍": "\uf002",
+    "🔎": "\uf002", "📰": "\uf1ea", "🗞": "\uf1ea", "📡": "\uf0ac",
+    "🗺": "\uf0ac", "🌄": "\uf0ac", "🔖": "\uf02e", "📁": "\uf07c",
+    "📂": "\uf07c", "💯": "\uf00c", "🙌": "\uf004", "👏": "\uf005",
+    "💸": "\uf53a", "🤑": "\uf53a", "🤫": "\uf023", "🔐": "\uf023",
+    "😎": "\uf005", "🤗": "\uf2b5", "💭": "\uf075", "🗣": "\uf0c0",
+    "👂": "\uf06e", "👀": "\uf06e", "🤔": "\uf5dc", "🤯": "\uf5dc",
+    "🧘": "\uf4d8", "🌻": "\uf4d8", "🪴": "\uf4d8", "🐢": "\uf017",
+    "🐇": "\uf135", "🦅": "\uf135", "🧗": "\uf0e7", "🏃": "\uf0e7",
+    "ℹ": "\uf05a", "📣": "\uf0f3", "📢": "\uf0f3", "📯": "\uf0f3",
+    "🔊": "\uf025", "🔈": "\uf025", "🆙": "\uf062", "🆕": "\uf005",
+    "🆒": "\uf005", "🆓": "\uf0ac", "🧭": "\uf140",
+    "🗂": "\uf0c5", "🖋": "\uf304", "✒": "\uf304", "🏗": "\uf0b1",
+  };
+  const iconMap = (icon) => emojiToFa[icon.replace(/\ufe0f/g, "")] || "\uf005";
 
   const hookLines = wrap(hook.replace(/\b\w/g, c => c.toUpperCase()), 16);
   const ctaLines = wrap(cta || "Follow for daily tips", 30);
@@ -161,10 +193,14 @@ ScaledBorderAndShadow: yes
 Format: Name, Fontname, Fontsize, PrimaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Hook,Noto Sans,${hookFontSize},&H00FFFFFF,&H00FFFFFF,&H00000000,-1,0,0,0,100,100,0,0,1,1,0,5,60,60,60,1
 Style: Num,Noto Sans,${numFontSize},${GOLD},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
+Style: TipIcon,Font Awesome 7 Free Solid,${numFontSize},${GOLD},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipT,Noto Sans,${titleFontSize},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipD,Noto Sans,${descFontSize},${LIGHT},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipEx,Noto Sans,${exFontSize},${GOLD},&H00000000,&H00000000,0,1,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: EndCTA,Noto Sans,${ctaFontSize},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
+Style: IconSolid,Font Awesome 7 Free Solid,60,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
+Style: IconReg,Font Awesome 7 Free,60,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
+Style: IconBrands,Font Awesome 7 Brands,60,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -200,7 +236,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     const descStartY = Math.round(blockTop + numH + gapNumTitle + titleH + gapTitleDesc + descLineH / 2);
 
     const CX = W / 2;
-    ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},Num,,0,0,0,,{\\an5\\pos(${CX},${numY})\\fad(300,300)}${circled[i]}\n`;
+    ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipIcon,,0,0,0,,{\\an5\\pos(${CX},${numY})\\fad(300,300)}${iconMap(t.icon)}\n`;
     ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipT,,0,0,0,,{\\an5\\pos(${CX},${titleY})\\fad(300,300)}${titleWrap[0]}\n`;
 
     for (let j = 0; j < descWrap.length; j++) {
