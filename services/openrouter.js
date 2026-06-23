@@ -1,9 +1,9 @@
 const MODEL = process.env.OPENROUTER_MODEL || "nvidia/nemotron-3-ultra-550b-a55b:free";
 
-export async function generateContent() {
-  const prompt = buildPrompt();
+export async function generateContent(type = "quote") {
+  const prompt = type === "lessons" ? buildLessonsPrompt() : buildPrompt();
   const text = await askAI(prompt);
-  return parseContent(text);
+  return type === "lessons" ? parseLessonsContent(text) : parseContent(text);
 }
 
 async function askAI(prompt, retries = 3) {
@@ -66,11 +66,53 @@ function parseContent(text) {
   const json = text.replace(/```json\s*|\s*```/g, "").trim();
   const parsed = JSON.parse(json);
   return {
+    type: "quote",
     quote: parsed.quote,
     source: parsed.source,
     description: parsed.description,
     cta: parsed.cta || "Follow for more daily wisdom like this",
     caption: parsed.caption || parsed.description + " #1section",
+    footer: "1section.com",
+  };
+}
+
+function buildLessonsPrompt() {
+  return `You are a viral content creator who speaks hard truths. Cover universal topics — money, career, mindset, habits, freedom, success, hidden opportunities, life stages. Use sharp, emotional, surprising language that stops the scroll.
+
+Generate content for a "numbered lessons" social media video. Each lesson reveals something people don't realize about a universal problem or opportunity, then hits them with a truth they can't ignore.
+
+Return a JSON object with:
+- "hook": a numbered opening line that grabs attention by pointing at a universal problem, opportunity, or life truth. 5 to 12 words. Make it forward-looking or eye-opening. Examples: "5 booming businesses you must try in 2026", "6 assets that pay you forever", "4 signs you're financially smarter than you think", "3 life levels you need to understand", "6 money lessons most people learn too late", "5 hidden habits that accelerate success"
+- "tips": an array of 3 to 6 objects (vary the count to match hook number), each with:
+  - "icon": a single emoji that represents the lesson visually (e.g. "⚡", "💰", "📚", "🤝", "🌍", "⚙️", "🕊️")
+  - "title": one insight or realization in 2-5 words. Punchy, memorable.
+  - "description": the big idea — explain WHY this matters (8-15 words). Make it emotional or surprising.
+  - "example": one concrete truth or real-life application (10-20 words). Make it hit home.
+- "cta": one sentence combining a question and a follow/save call-to-action. Example: "Are you also building assets right now? Follow and save for more wealth revelations." or "Which one are you missing? Follow for daily wealth insights." Under 15 words.
+- "caption": one short paragraph (2-3 sentences) for social media. End with #1section.
+
+Cover topics like: financial freedom, career pivots, hidden assets, wealth habits, life stages, mindset shifts, digital opportunities, passive income, personal growth. Vary the number (3 to 6). Every video must feel like a revelation, not a lecture. English only. Return ONLY valid JSON.`;
+}
+
+function titleCase(s) {
+  return s.replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function parseLessonsContent(text) {
+  const json = text.replace(/```json\s*|\s*```/g, "").trim();
+  const parsed = JSON.parse(json);
+  const tips = (parsed.tips || []).map(t => ({
+    icon: t.icon || "",
+    title: titleCase(t.title),
+    description: t.description,
+    example: t.example || "",
+  }));
+  return {
+    type: "lessons",
+    hook: titleCase(parsed.hook),
+    tips,
+    cta: parsed.cta || "Follow for more revelations",
+    caption: parsed.caption || parsed.hook + " #1section",
     footer: "1section.com",
   };
 }

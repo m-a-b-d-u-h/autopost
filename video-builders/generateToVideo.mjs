@@ -1,5 +1,5 @@
 import { spawn } from "child_process";
-import { readdirSync, existsSync, mkdirSync, writeFileSync, unlinkSync } from "fs";
+import { readdirSync, existsSync, readFileSync, mkdirSync, writeFileSync, unlinkSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -10,6 +10,29 @@ const FONT_DIR = join(__dirname, "..", "assets", "fonts");
 const PROFILE_PNG = join(__dirname, "..", "assets", "logo", "i.png");
 const MUSIC_DIR = join(__dirname, "..", "assets", "music");
 const OUT_DIR = join(__dirname, "..", "output");
+const CACHE_FILE = join(BG_DIR, ".durations.json");
+
+let durationCache = null;
+
+function loadDurationCache() {
+  if (durationCache) return durationCache;
+  try { durationCache = JSON.parse(readFileSync(CACHE_FILE, "utf8")); } catch { durationCache = {}; }
+  return durationCache;
+}
+
+function saveDurationCache() {
+  try { writeFileSync(CACHE_FILE, JSON.stringify(durationCache, null, 2)); } catch {}
+}
+
+async function getCachedDuration(file) {
+  const cache = loadDurationCache();
+  const name = file.split("/").pop().split("\\").pop();
+  if (cache[name] != null) return cache[name];
+  const dur = await getVideoDuration(file);
+  cache[name] = dur;
+  saveDurationCache();
+  return dur;
+}
 
 function wrap(text, max) {
   const lines = [];
@@ -51,8 +74,9 @@ async function findBackground() {
     const avail = files.filter(f => !used.has(f));
     if (!avail.length) break;
     const f = avail[Math.floor(Math.random() * avail.length)];
-    picks.push(join(BG_DIR, f));
-    total += await getVideoDuration(join(BG_DIR, f));
+    const fp = join(BG_DIR, f);
+    picks.push(fp);
+    total += await getCachedDuration(fp);
     used.add(f);
   }
   return picks;
@@ -83,7 +107,7 @@ export async function generateVideo({ text, cta, output }) {
   const totalTextH = lines.length * lh;
   const sy = Math.max(200, Math.round(903 - totalTextH / 2));
   const pfpW = 85, pfpH = 85;
-  const pfpX = (W - pfpW) / 2, pfpY = sy + totalTextH + 50;
+  const pfpX = Math.round((W - pfpW) / 2), pfpY = sy + totalTextH + 50;
   const ctaY = pfpY + pfpH + 55;
 
   let ass = `[Script Info]
@@ -160,7 +184,7 @@ Dialogue: 0,${toAssTime(0)},${toAssTime(DUR)},QM,,0,0,0,,{\\an5\\pos(${W/2},${sy
     "-filter_complex", flt.join(";"),
     "-map", "[v]",
     ...(music ? ["-map", `${musicIdx}:a`, "-af", "volume=0.25"] : []),
-    "-c:v", "libx264", "-preset", "medium", "-crf", "23", "-pix_fmt", "yuv420p",
+    "-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-pix_fmt", "yuv420p",
     "-t", `${DUR}`,
     ...(music ? ["-c:a", "aac", "-b:a", "128k"] : []),
     output,

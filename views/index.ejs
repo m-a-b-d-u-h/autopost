@@ -85,7 +85,7 @@
 <body>
   <div class="container">
     <h1>Autopost Manager</h1>
-    <p class="subtitle">Quote video generation &amp; publishing dashboard</p>
+    <p class="subtitle">Auto content generation &amp; publishing dashboard</p>
 
     <div class="stats">
       <div class="stat-card">
@@ -120,8 +120,15 @@
 
     <div class="section">
       <div class="section-title">Generate</div>
-      <button class="btn-primary" onclick="generate()" id="genBtn">Generate & Publish</button>
-      <span id="genStatus" style="font-size:0.8rem;color:#a1a1aa;margin-left:0.75rem"></span>
+      <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
+        <select id="typeSelect">
+          <% types.forEach(t => { %>
+            <option value="<%= t %>"><%= t.charAt(0).toUpperCase() + t.slice(1) %></option>
+          <% }) %>
+        </select>
+        <button class="btn-primary" onclick="generate()" id="genBtn">Generate & Publish</button>
+        <span id="genStatus" style="font-size:0.8rem;color:#a1a1aa"></span>
+      </div>
     </div>
 
     <div class="video-list">
@@ -221,11 +228,11 @@
         const res = await fetch('/generate', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({})
+          body: JSON.stringify({ type: document.getElementById('typeSelect').value })
         });
         const data = await res.json();
         if (!data.success) throw new Error(data.error || 'Failed');
-        showToast('Quote generated & published!');
+        showToast(data.type + ' generated & published!');
         setTimeout(() => location.reload(), 1500);
       } catch (err) {
         showToast(err.message, true);
