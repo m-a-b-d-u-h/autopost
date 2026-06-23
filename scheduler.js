@@ -51,7 +51,7 @@ export function startScheduler() {
   const cfg = loadConfig();
   const crons = generateCrons(cfg.count);
   startJobs(crons);
-  console.log(`[scheduler] Started ${cfg.count} jobs (UTC): ${crons.join(", ")}`);
+  console.log(`[scheduler] Started ${cfg.count} jobs (local): ${crons.join(", ")}`);
 }
 
 export function restartScheduler(count) {
