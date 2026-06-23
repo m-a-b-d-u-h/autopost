@@ -1,6 +1,5 @@
 node_modules/
 output/
-!assets/backgrounds/
 *.mp4
 *.png
 *.jpg
