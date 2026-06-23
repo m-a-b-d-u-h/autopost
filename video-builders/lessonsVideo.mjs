@@ -97,51 +97,46 @@ function toAssTime(s) {
   return `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}.${String(cs).padStart(2, "0")}`;
 }
 
-export async function generateLessonsVideo({ hook, tips, cta, output }) {
+const CODEPOINTS_URL = "https://raw.githubusercontent.com/google/material-design-icons/master/variablefont/MaterialSymbolsOutlined%5BFILL,GRAD,opsz,wght%5D.codepoints";
+let codepointsCache = null;
+
+async function getCodepoints() {
+  if (codepointsCache) return codepointsCache;
+  const res = await fetch(CODEPOINTS_URL);
+  const text = await res.text();
+  const map = new Map();
+  for (const line of text.trim().split("\n")) {
+    const [name, hex] = line.trim().split(" ");
+    if (name && hex) map.set(name, String.fromCodePoint(parseInt(hex, 16)));
+  }
+  codepointsCache = map;
+  return map;
+}
+
+function hexToAssColor(hex) {
+  if (!hex || hex.length < 6) return null;
+  const c = hex.replace("#", "");
+  const r = parseInt(c.substring(0, 2), 16);
+  const g = parseInt(c.substring(2, 4), 16);
+  const b = parseInt(c.substring(4, 6), 16);
+  return `&H00${b.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${r.toString(16).padStart(2, "0")}&`;
+}
+
+export async function generateLessonsVideo({ hook, lesson, cta, output }) {
   const music = findMusic();
   const bgFiles = await findBackground();
   const ts = Date.now();
   const assFile = join(OUT_DIR, `${ts}.ass`);
 
-  const tipCount = tips.length;
+  const lessonCount = lesson.length;
   const openingEnd = 5;
   const endStart = DUR - 5;
   const tipsDuration = endStart - openingEnd;
-  const itemDur = Math.floor(tipsDuration / Math.max(tipCount, 1));
+  const itemDur = Math.floor(tipsDuration / Math.max(lessonCount, 1));
 
-  const emojiToFa = {
-    "💡": "\uf0eb", "💰": "\uf53a", "🚀": "\uf135", "⚡": "\uf0e7",
-    "🌍": "\uf0ac", "📈": "\uf201", "📚": "\uf518", "📖": "\uf518",
-    "🤝": "\uf2b5", "⚙": "\uf013", "🕊": "\uf4ba", "❤": "\uf004",
-    "⭐": "\uf005", "✅": "\uf00c", "🎯": "\uf140", "🔥": "\uf06d",
-    "💎": "\uf3a5", "🏆": "\uf091", "📊": "\ue473", "🔑": "\uf084",
-    "🎓": "\uf19d", "💻": "\uf109", "📱": "\uf3ce", "🌱": "\uf4d8",
-    "🍀": "\uf4d8", "💪": "\uf6de", "🧠": "\uf5dc", "👁": "\uf06e",
-    "🛡": "\uf132", "⏰": "\uf017", "🔒": "\uf023", "🎨": "\uf53f",
-    "🎵": "\uf001", "🔔": "\uf0f3", "📝": "\uf304", "💬": "\uf075",
-    "👥": "\uf0c0", "🤖": "\uf544", "🔄": "\uf2f1", "📌": "\uf08d",
-    "🎬": "\uf03d", "🔧": "\uf0ad", "🛠": "\uf0ad", "📦": "\uf466",
-    "💊": "\uf46b", "🏠": "\uf015", "✈": "\uf072", "🚗": "\uf1b9",
-    "👑": "\uf521", "🎉": "\uf005", "🧩": "\uf12e", "⚖": "\uf24e",
-    "🖥": "\ue163", "☕": "\uf7b6", "⏳": "\uf254", "🧲": "\uf076",
-    "🎧": "\uf025", "🥇": "\uf5a2", "🎁": "\uf06b", "🔗": "\uf0c1",
-    "📉": "\uf201",
-    "📜": "\uf70e", "💼": "\uf0b1", "💳": "\uf09d", "💵": "\uf0d6",
-    "📅": "\uf133", "🏦": "\uf19c", "📋": "\uf328", "🔍": "\uf002",
-    "🔎": "\uf002", "📰": "\uf1ea", "🗞": "\uf1ea", "📡": "\uf0ac",
-    "🗺": "\uf0ac", "🌄": "\uf0ac", "🔖": "\uf02e", "📁": "\uf07c",
-    "📂": "\uf07c", "💯": "\uf00c", "🙌": "\uf004", "👏": "\uf005",
-    "💸": "\uf53a", "🤑": "\uf53a", "🤫": "\uf023", "🔐": "\uf023",
-    "😎": "\uf005", "🤗": "\uf2b5", "💭": "\uf075", "🗣": "\uf0c0",
-    "👂": "\uf06e", "👀": "\uf06e", "🤔": "\uf5dc", "🤯": "\uf5dc",
-    "🧘": "\uf4d8", "🌻": "\uf4d8", "🪴": "\uf4d8", "🐢": "\uf017",
-    "🐇": "\uf135", "🦅": "\uf135", "🧗": "\uf0e7", "🏃": "\uf0e7",
-    "ℹ": "\uf05a", "📣": "\uf0f3", "📢": "\uf0f3", "📯": "\uf0f3",
-    "🔊": "\uf025", "🔈": "\uf025", "🆙": "\uf062", "🆕": "\uf005",
-    "🆒": "\uf005", "🆓": "\uf0ac", "🧭": "\uf140",
-    "🗂": "\uf0c5", "🖋": "\uf304", "✒": "\uf304", "🏗": "\uf0b1",
-  };
-  const iconMap = (icon) => emojiToFa[icon.replace(/\ufe0f/g, "")] || "\uf005";
+  const cpMap = await getCodepoints();
+
+  const iconMap = (map, name) => map.get(name) || map.get("lightbulb") || "\ue90f";
 
   const hookLines = wrap(hook.replace(/\b\w/g, c => c.toUpperCase()), 16);
   const ctaLines = wrap(cta || "Follow for daily tips", 30);
@@ -152,19 +147,21 @@ export async function generateLessonsVideo({ hook, tips, cta, output }) {
 
   const hookFontSize = 110;
   const numFontSize = 78;
+  const iconFontSize = 120;
   const titleFontSize = 68;
-  const descFontSize = 44;
-  const exFontSize = 40;
+  const descFontSize = 52;
+  const exFontSize = 48;
   const ctaFontSize = 70;
   const hookLineH = 134;
   const numH = 88;
   const titleH = 76;
-  const descLineH = 52;
-  const exH = 48;
+  const descLineH = 62;
+  const exH = 56;
   const gapNumTitle = 16;
   const gapTitleDesc = 14;
-  const gapDescEx = 12;
+  const gapDescEx = 34;
   const ctaLineH = 84;
+  const MX = 140;
   const GOLD = "&H0000D7FF&";
   const LIGHT = "&H00D0D0D0&";
   const contentCenterY = 840;
@@ -173,7 +170,7 @@ export async function generateLessonsVideo({ hook, tips, cta, output }) {
 
   // Hook TEXT centered at contentCenterY, PFP below gold bar
   const hookBlockH = hookLines.length * hookLineH;
-  const hookTxtTop = contentCenterY - hookBlockH / 2;
+  const hookTxtTop = contentCenterY - hookBlockH / 2 + 60;
   const hookBarY = Math.round(hookTxtTop + hookBlockH + 30);
   const pfpY_open = Math.round(hookBarY + 20 + pfpH / 2);
 
@@ -191,16 +188,13 @@ ScaledBorderAndShadow: yes
 
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-Style: Hook,Noto Sans,${hookFontSize},&H00FFFFFF,&H00FFFFFF,&H00000000,-1,0,0,0,100,100,0,0,1,1,0,5,60,60,60,1
+Style: Hook,Noto Sans,${hookFontSize},&H00FFFFFF,&H00FFFFFF,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: Num,Noto Sans,${numFontSize},${GOLD},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
-Style: TipIcon,Font Awesome 7 Free Solid,${numFontSize},${GOLD},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
+Style: TipIcon,Material Symbols Outlined,${iconFontSize},${GOLD},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipT,Noto Sans,${titleFontSize},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipD,Noto Sans,${descFontSize},${LIGHT},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipEx,Noto Sans,${exFontSize},${GOLD},&H00000000,&H00000000,0,1,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: EndCTA,Noto Sans,${ctaFontSize},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
-Style: IconSolid,Font Awesome 7 Free Solid,60,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
-Style: IconReg,Font Awesome 7 Free,60,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
-Style: IconBrands,Font Awesome 7 Brands,60,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
@@ -209,44 +203,64 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
   // --- OPENING UNIT: icon + hook text + gold bar (PFP via ffmpeg) ---
   {
     const top = hookTxtTop;
-    const iconY = Math.round(top - 34);
-    ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},Num,,0,0,0,,{\\an5\\pos(${W / 2},${iconY})\\fad(0,300)\\fs50}✦\n`;
+    const iconY = Math.round(top - 125);
+    ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},TipIcon,,0,0,0,,{\\an4\\pos(${MX},${iconY})\\fad(0,300)}${iconMap(cpMap, "auto_awesome")}\n`;
     for (let i = 0; i < hookLines.length; i++) {
       const y = Math.round(top + i * hookLineH + hookLineH / 2);
-      ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},Hook,,0,0,0,,{\\an5\\pos(${W / 2},${y})\\fad(0,300)}${hookLines[i]}\n`;
+      ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},Hook,,0,0,0,,{\\an4\\pos(${MX},${y})\\fad(0,300)}${hookLines[i]}\n`;
     }
     ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},,,0,0,0,,{\\fad(0,300)\\p1\\c${GOLD}\\bord0\\pos(${(W - 200) / 2},${hookBarY})}m 0 0 l 200 0{\\p0}\n`;
   }
 
-  // --- TIPS ITEMS (each centered at H/2) ---
-  for (let i = 0; i < tipCount; i++) {
+  // --- LESSON ITEMS (each centered at H/2) ---
+  for (let i = 0; i < lessonCount; i++) {
     const start = openingEnd + i * itemDur;
-    const end = i === tipCount - 1 ? endStart : openingEnd + (i + 1) * itemDur;
-    const t = tips[i];
+    const end = i === lessonCount - 1 ? endStart : openingEnd + (i + 1) * itemDur;
+    const t = lesson[i];
     const titleWrap = wrap(t.title.replace(/\b\w/g, c => c.toUpperCase()), 22);
-    const descWrap = wrap(t.description, 30);
+    const descSentences = t.description.split(/\.\s+/).filter(s => s.trim().length > 0).map(s => wrap(s.trim().replace(/\.$/, "") + ".", 30));
+    const descTotalLines = descSentences.reduce((sum, lines) => sum + lines.length, 0);
+    const descGaps = Math.max(0, descSentences.length - 1);
     const exWrap = wrap(t.example || "", 30);
     const exHasContent = exWrap.length > 0 && exWrap[0].length > 0;
+    const counterH = 68;
 
-    const blockH = numH + gapNumTitle + titleH + gapTitleDesc + descWrap.length * descLineH + (exHasContent ? gapDescEx + exH : 0);
+    const blockH = numH + gapNumTitle + titleH + gapTitleDesc + descTotalLines * descLineH + descGaps * descLineH + (exHasContent ? gapDescEx + exH : 0) + counterH;
     const blockTop = lessonCtaCenterY - blockH / 2;
 
-    const numY = Math.round(blockTop + numH / 2);
+    const numY = Math.round(blockTop + numH / 2 - 75);
     const titleY = Math.round(blockTop + numH + gapNumTitle + titleH / 2);
     const descStartY = Math.round(blockTop + numH + gapNumTitle + titleH + gapTitleDesc + descLineH / 2);
 
     const CX = W / 2;
-    ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipIcon,,0,0,0,,{\\an5\\pos(${CX},${numY})\\fad(300,300)}${iconMap(t.icon)}\n`;
-    ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipT,,0,0,0,,{\\an5\\pos(${CX},${titleY})\\fad(300,300)}${titleWrap[0]}\n`;
+    const iconColor = t.color ? `\\c${hexToAssColor(t.color)}` : "";
 
-    for (let j = 0; j < descWrap.length; j++) {
-      ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipD,,0,0,0,,{\\an5\\pos(${CX},${descStartY + j * descLineH})\\fad(300,300)}${descWrap[j]}\n`;
+    ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipIcon,,0,0,0,,{\\an4\\pos(${MX},${numY})\\fad(300,300)${iconColor}}${iconMap(cpMap, t.icon)}\n`;
+    ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipT,,0,0,0,,{\\an4\\pos(${MX},${titleY})\\fad(300,300)}${titleWrap[0]}\n`;
+    const wmX = Math.round(W - 0.2 * 1750);
+    const wmY = lessonCtaCenterY;
+    const transCs = 30;
+    const transS = transCs / 100;
+    ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end - transS)},TipIcon,,0,0,0,,{\\an5\\move(${wmX + 30},${wmY},${wmX},${wmY},0,${transCs})\\fad(300,0)\\fs1750\\c&HFFFFFF&\\alpha&HFC&}${iconMap(cpMap, t.icon)}\n`;
+    ass += `Dialogue: 0,${toAssTime(end - transS)},${toAssTime(end)},TipIcon,,0,0,0,,{\\an5\\move(${wmX},${wmY},${wmX + 30},${wmY},0,${transCs})\\fad(0,300)\\fs1750\\c&HFFFFFF&\\alpha&HFC&}${iconMap(cpMap, t.icon)}\n`;
+
+    let descY = descStartY;
+    for (const sentence of descSentences) {
+      for (const line of sentence) {
+        ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipD,,0,0,0,,{\\an4\\pos(${MX},${descY})\\fad(300,300)}${line}\n`;
+        descY += descLineH;
+      }
+      if (descGaps > 0) descY += descLineH;
     }
 
     if (exHasContent) {
-      const exY = Math.round(blockTop + numH + gapNumTitle + titleH + gapTitleDesc + descWrap.length * descLineH + gapDescEx + exH / 2);
-      ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipEx,,0,0,0,,{\\an5\\pos(${CX},${exY})\\fad(300,300)}${"→ " + exWrap[0]}\n`;
+      const exY = Math.round(descY - descLineH + gapDescEx + exH / 2);
+      const exColor = t.color ? `\\c${hexToAssColor(t.color)}` : "";
+      ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipEx,,0,0,0,,{\\an4\\pos(${MX},${exY})\\fad(300,300)${exColor}}${"→ " + exWrap[0]}\n`;
     }
+
+    const counterY = Math.round((exHasContent ? descY - descLineH + gapDescEx + exH : descY - descLineH) + counterH / 2 + 136);
+    ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},Num,,0,0,0,,{\\an4\\pos(${MX},${counterY})\\fad(300,300)\\fs56\\b1}${i + 1}/${lessonCount}\n`;
   }
 
   // --- CTA UNIT: PFP (via ffmpeg) + gold bar + CTA text ---
@@ -254,7 +268,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     ass += `Dialogue: 0,${toAssTime(endStart)},${toAssTime(DUR)},,,0,0,0,,{\\fad(400,0)\\p1\\c${GOLD}\\bord0\\pos(${(W - 200) / 2},${ctaBarY})}m 0 0 l 200 0{\\p0}\n`;
     for (let i = 0; i < ctaLines.length; i++) {
       const y = Math.round(ctaTxtTop + i * ctaLineH + ctaLineH / 2);
-      ass += `Dialogue: 0,${toAssTime(endStart)},${toAssTime(DUR)},EndCTA,,0,0,0,,{\\an5\\pos(${W / 2},${y})\\fad(400,0)}${ctaLines[i]}\n`;
+      ass += `Dialogue: 0,${toAssTime(endStart)},${toAssTime(DUR)},EndCTA,,0,0,0,,{\\an4\\pos(${MX},${y})\\fad(400,0)}${ctaLines[i]}\n`;
     }
   }
 
