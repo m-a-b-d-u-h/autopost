@@ -223,9 +223,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     const descGaps = Math.max(0, descSentences.length - 1);
     const exWrap = wrap(t.example || "", 30);
     const exHasContent = exWrap.length > 0 && exWrap[0].length > 0;
+    const exLines = exHasContent ? exWrap.length : 0;
     const counterH = 68;
 
-    const blockH = numH + gapNumTitle + titleH + gapTitleDesc + descTotalLines * descLineH + descGaps * descLineH + (exHasContent ? gapDescEx + exH : 0) + counterH;
+    const blockH = numH + gapNumTitle + titleH + gapTitleDesc + descTotalLines * descLineH + descGaps * descLineH + (exHasContent ? gapDescEx + exLines * exH : 0) + counterH;
     const blockTop = lessonCtaCenterY - blockH / 2;
 
     const numY = Math.round(blockTop + numH / 2 - 75);
@@ -250,13 +251,17 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
       if (descGaps > 0) descY += descLineH;
     }
 
+    let exLastY = descY - descLineH;
     if (exHasContent) {
-      const exY = Math.round(descY - descLineH + gapDescEx + exH / 2);
+      exLastY = Math.round(descY - descLineH + gapDescEx + exH / 2);
       const exColor = t.color ? `\\c${hexToAssColor(t.color)}` : "";
-      ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipEx,,0,0,0,,{\\an4\\pos(${MX},${exY})\\fad(300,300)${exColor}}${"→ " + exWrap[0]}\n`;
+      for (let j = 0; j < exWrap.length; j++) {
+        ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipEx,,0,0,0,,{\\an4\\pos(${MX},${exLastY})\\fad(300,300)${exColor}}${j === 0 ? "→ " : "   "}${exWrap[j]}\n`;
+        exLastY += exH;
+      }
     }
 
-    const counterY = Math.round((exHasContent ? descY - descLineH + gapDescEx + exH : descY - descLineH) + counterH / 2 + 136);
+    const counterY = Math.round(exLastY + counterH / 2 + 136);
     ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},Num,,0,0,0,,{\\an4\\pos(${MX},${counterY})\\fad(300,300)\\fs56\\b1}${i + 1}/${lessonCount}\n`;
   }
 
