@@ -83,6 +83,7 @@ Generate content for a "numbered lessons" social media video. Each lesson reveal
 
 Return a JSON object with:
 - "hook": a numbered opening line that grabs attention by pointing at a universal problem, opportunity, or life truth. 5 to 12 words. Make it forward-looking or eye-opening. Examples: "5 booming businesses you must try in 2026", "6 assets that pay you forever", "4 signs you're financially smarter than you think", "3 life levels you need to understand", "6 money lessons most people learn too late", "5 hidden habits that accelerate success"
+- "hook_icon": a Material Symbols Outlined icon name in snake_case that matches the hook theme (e.g. "rocket_launch", "payments", "lightbulb", "trending_up", "psychology", "business", "attach_money", "emoji_objects")
 - "lesson": an array of 3 to 6 objects (vary the count to match hook number), each with:
   - "icon": a Material Symbols Outlined icon name in snake_case. Reference the full icon library at https://raw.githubusercontent.com/google/material-design-icons/master/variablefont/MaterialSymbolsOutlined[FILL,GRAD,opsz,wght].codepoints (e.g. "bolt", "payments", "rocket_launch", "lightbulb", "globe", "trending_up", "handshake")
   - "color": a vibrant hex accent color string (e.g. "#FFD700", "#FF6B6B", "#4FC3F7", "#81C784", "#CE93D8") that energizes the lesson's visual identity
@@ -112,6 +113,7 @@ function parseLessonsContent(text) {
   return {
     type: "lessons",
     hook: titleCase(parsed.hook),
+    hook_icon: parsed.hook_icon || "auto_awesome",
     lesson,
     cta: parsed.cta || "Follow for more revelations",
     caption: parsed.caption || parsed.hook + " #1section",

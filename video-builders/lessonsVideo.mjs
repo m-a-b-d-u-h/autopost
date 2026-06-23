@@ -122,7 +122,7 @@ function hexToAssColor(hex) {
   return `&H00${b.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${r.toString(16).padStart(2, "0")}&`;
 }
 
-export async function generateLessonsVideo({ hook, lesson, cta, output }) {
+export async function generateLessonsVideo({ hook, hook_icon, lesson, cta, output }) {
   const lessonCount = lesson.length;
   const SLIDE_DUR = 5;
   const openingEnd = 4;
@@ -204,7 +204,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
   {
     const top = hookTxtTop;
     const iconY = Math.round(top - 125);
-    ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},TipIcon,,0,0,0,,{\\an4\\pos(${MX},${iconY})\\fad(0,300)}${iconMap(cpMap, "auto_awesome")}\n`;
+    ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},TipIcon,,0,0,0,,{\\an4\\pos(${MX},${iconY})\\fad(0,300)}${iconMap(cpMap, hook_icon || "auto_awesome")}\n`;
     for (let i = 0; i < hookLines.length; i++) {
       const y = Math.round(top + i * hookLineH + hookLineH / 2);
       ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},Hook,,0,0,0,,{\\an4\\pos(${MX},${y})\\fad(0,300)}${hookLines[i]}\n`;
