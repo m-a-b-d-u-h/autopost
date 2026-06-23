@@ -111,7 +111,7 @@ export async function generateLessonsVideo({ hook, tips, cta, output }) {
 
   const circled = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩"];
 
-  const hookLines = wrap(hook, 16);
+  const hookLines = wrap(hook.replace(/\b\w/g, c => c.toUpperCase()), 16);
   const ctaLines = wrap(cta || "Follow for daily tips", 30);
   const pfpW = 85, pfpH = 85;
   const pfpX = Math.round((W - pfpW) / 2);
@@ -135,7 +135,7 @@ export async function generateLessonsVideo({ hook, tips, cta, output }) {
   const ctaLineH = 84;
   const GOLD = "&H0000D7FF&";
   const LIGHT = "&H00D0D0D0&";
-  const contentCenterY = 790;
+  const contentCenterY = 840;
   const lessonCtaCenterY = contentCenterY + 100;
   const ctaCenterY = lessonCtaCenterY + 100;
 
@@ -164,16 +164,17 @@ Style: Num,Noto Sans,${numFontSize},${GOLD},&H00000000,&H00000000,0,0,0,0,100,10
 Style: TipT,Noto Sans,${titleFontSize},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipD,Noto Sans,${descFontSize},${LIGHT},&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 Style: TipEx,Noto Sans,${exFontSize},${GOLD},&H00000000,&H00000000,0,1,0,0,100,100,0,0,1,0,0,5,60,60,60,1
-Style: EndCTA,Noto Sans,${ctaFontSize},${GOLD},&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
-Style: EndCTASub,Noto Sans,48,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
+Style: EndCTA,Noto Sans,${ctaFontSize},&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,0,0,5,60,60,60,1
 
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 `;
 
-  // --- OPENING UNIT: hook text + gold bar (PFP via ffmpeg) ---
+  // --- OPENING UNIT: icon + hook text + gold bar (PFP via ffmpeg) ---
   {
     const top = hookTxtTop;
+    const iconY = Math.round(top - 34);
+    ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},Num,,0,0,0,,{\\an5\\pos(${W / 2},${iconY})\\fad(0,300)\\fs50}✦\n`;
     for (let i = 0; i < hookLines.length; i++) {
       const y = Math.round(top + i * hookLineH + hookLineH / 2);
       ass += `Dialogue: 0,${toAssTime(0)},${toAssTime(openingEnd)},Hook,,0,0,0,,{\\an5\\pos(${W / 2},${y})\\fad(0,300)}${hookLines[i]}\n`;
@@ -186,7 +187,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     const start = openingEnd + i * itemDur;
     const end = i === tipCount - 1 ? endStart : openingEnd + (i + 1) * itemDur;
     const t = tips[i];
-    const titleWrap = wrap(t.title, 22);
+    const titleWrap = wrap(t.title.replace(/\b\w/g, c => c.toUpperCase()), 22);
     const descWrap = wrap(t.description, 30);
     const exWrap = wrap(t.example || "", 30);
     const exHasContent = exWrap.length > 0 && exWrap[0].length > 0;
@@ -217,8 +218,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     ass += `Dialogue: 0,${toAssTime(endStart)},${toAssTime(DUR)},,,0,0,0,,{\\fad(400,0)\\p1\\c${GOLD}\\bord0\\pos(${(W - 200) / 2},${ctaBarY})}m 0 0 l 200 0{\\p0}\n`;
     for (let i = 0; i < ctaLines.length; i++) {
       const y = Math.round(ctaTxtTop + i * ctaLineH + ctaLineH / 2);
-      const sty = i === 0 ? "EndCTA" : "EndCTASub";
-      ass += `Dialogue: 0,${toAssTime(endStart)},${toAssTime(DUR)},${sty},,0,0,0,,{\\an5\\pos(${W / 2},${y})\\fad(400,0)}${ctaLines[i]}\n`;
+      ass += `Dialogue: 0,${toAssTime(endStart)},${toAssTime(DUR)},EndCTA,,0,0,0,,{\\an5\\pos(${W / 2},${y})\\fad(400,0)}${ctaLines[i]}\n`;
     }
   }
 
