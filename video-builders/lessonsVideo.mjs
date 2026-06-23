@@ -337,7 +337,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
   const args = ["-y", ...inp,
     "-filter_complex", flt.join(";"),
     "-map", "[v]",
-    ...(music ? ["-map", `${musicIdx}:a`, "-af", "volume=0.25"] : []),
+    ...(music ? ["-map", `${musicIdx}:a`, "-af", `volume=0.25,afade=t=out:st=${endStart}:d=5`] : []),
     "-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-pix_fmt", "yuv420p",
     "-t", `${DUR}`,
     ...(music ? ["-c:a", "aac", "-b:a", "128k"] : []),
