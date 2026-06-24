@@ -58,7 +58,7 @@ function buildLessonsPrompt(existingHooks = []) {
 Generate content for a "numbered lessons" social media video. Each lesson uncovers a hidden pattern, uncomfortable reality, or overlooked opportunity — then delivers a truth backed by data or real-world evidence.
 
 Return a JSON object with:
-- "hook": a numbered opening line that grabs attention with a surprising fact, hidden pattern, or uncomfortable reality. 5 to 12 words. Be emotionally powerful but never insulting — reveal truths that make people think, not feel attacked. NEVER mention AI tools, tech tools, or software tools. Use a wide variety of topics across these example categories:
+- "hook": a numbered opening line that grabs attention with a surprising fact, hidden pattern, or uncomfortable reality. 5 to 12 words. Be emotionally powerful but never insulting — reveal truths that make people think, not feel attacked. The number MUST be the first word followed directly by a space and then the rest (e.g. "5 habits destroying your health" — NOT "5. habits", NOT "5- habits", no dots, no dashes). NEVER mention AI tools, tech tools, or software tools. Use a wide variety of topics across these example categories:
 
 Psychology & Human Nature: "4 psychological patterns that control your decisions", "5 things your childhood secretly shaped about you", "3 reasons humans naturally resist change (and how it holds them back)", "6 silent signs of jealousy you ignore every day", "4 phrases that accidentally push people away", "3 truths about ego that most people never admit"
 
@@ -140,7 +140,7 @@ function parseLessonsContent(text) {
   }));
   return {
     type: "lessons",
-    hook: titleCase(parsed.hook),
+    hook: titleCase(parsed.hook).replace(/^(\d+)[.\-)\s]+/, "$1 ").trim(),
     hook_desc: parsed.hook_desc || "",
     hook_icon: parsed.hook_icon || "auto_awesome",
     lesson,
