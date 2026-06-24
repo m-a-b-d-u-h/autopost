@@ -58,7 +58,7 @@ function buildLessonsPrompt(existingHooks = []) {
 Generate content for a "numbered lessons" social media video. Each lesson uncovers a hidden pattern, uncomfortable reality, or overlooked opportunity — then delivers a truth backed by data or real-world evidence.
 
 Return a JSON object with:
-- "hook": a numbered opening line that grabs attention with a surprising fact, hidden pattern, or uncomfortable reality. 5 to 12 words. The number MUST be between 3 and 7 — NEVER use 1 or 2. Never repeat the same number pattern across videos. The number MUST be the first word followed directly by a space (e.g. "5 habits destroying your health" — NOT "5. habits", no dots, no dashes). Vary the topics aggressively between videos — NEVER default to the same category. Avoid overused words like "silent", "secretly", "quietly", "hidden", "nobody tells you". Make every hook feel unique and unexpected. NEVER mention AI tools, tech tools, or software tools. Use a wide variety of topics across these example categories:
+- "hook": a numbered opening line that grabs attention with a surprising fact, hidden pattern, or uncomfortable reality. 5 to 12 words. The number MUST be between 3 and 7 — NEVER use 1 or 2. The number in the hook determines the exact number of lesson items below — if the hook says "4 signs" then there MUST be exactly 4 lesson objects. Never repeat the same number pattern across videos. The number MUST be the first word followed directly by a space (e.g. "5 habits destroying your health" — NOT "5. habits", no dots, no dashes). Vary the topics aggressively between videos — NEVER default to the same category. Avoid overused words like "silent", "secretly", "quietly", "hidden", "nobody tells you". Make every hook feel unique and unexpected. NEVER mention AI tools, tech tools, or software tools. Use a wide variety of topics across these example categories:
 
 Psychology & Human Nature: "4 psychological patterns that control your decisions", "5 things your childhood shaped about you", "3 reasons humans naturally resist change", "6 jealousy signs you ignore every day", "4 phrases that push people away", "3 truths about ego most people never admit"
 
@@ -111,7 +111,7 @@ News & Trends: "4 global trends reshaping everyday life right now", "5 patterns 
 Principles: "5 timeless principles that predict long-term success", "4 decision-making rules used by top performers", "3 core principles that separate progress from stagnation", "6 life frameworks that simplify every complex choice"
 - "hook_desc": a one-sentence description that expands on the hook and sets up what the lessons will cover. Think of it as the "big picture" context. 8-15 words. Keep it sharp and reality-driven, not generic.
 - "hook_icon": a Material Symbols Outlined icon name in snake_case that PERFECTLY matches the hook theme. DO NOT use generic icons — pick one that directly visualizes the hook subject. Examples: hook about money → "payments" or "attach_money", hook about psychology → "psychology" or "neurology", hook about business → "business" or "rocket_launch", hook about health → "monitor_heart" or "exercise", hook about relationships → "diversity_3" or "group", hook about parenting → "family_star" or "child_care", hook about education → "school" or "auto_stories", hook about time → "schedule" or "timer", hook about success → "trending_up" or "military_tech". Always think: what single icon best represents this exact hook?
-- "lesson": an array of 3 to 7 objects (vary the count to match hook number), each with:
+- "lesson": an array of exactly N objects where N is the number in the hook. For example if hook is "4 signs..." then lesson must have exactly 4 items (never 3, never 5). Each with:
   - "icon": a Material Symbols Outlined icon name in snake_case that PERFECTLY represents the FULL meaning of the lesson's title, description, and example combined. Read the entire lesson content first, understand its core message, then pick the single most fitting icon. There are 1000+ available icons in the library — be precise and creative. NEVER reuse an icon across different lessons (every icon must be unique). NEVER use generic fallback icons like "lightbulb" or "star" unless no other icon fits perfectly. Examples: passive income → "account_balance", time → "schedule", networks → "hub", health → "monitor_heart", growth → "trending_up", protection → "shield", learning → "school".
   - "color": a vibrant hex accent color string (e.g. "#FFD700", "#FF6B6B", "#4FC3F7", "#81C784", "#CE93D8") that energizes the lesson's visual identity
   - "title": one insight or realization in 2-5 words. Punchy, memorable.
@@ -121,7 +121,7 @@ Principles: "5 timeless principles that predict long-term success", "4 decision-
 - "mood": classify the content energy as "high" (hard-hitting, urgent, dangerous, aggressive, high-stakes truths), "medium" (balanced, educational, informative, practical), or "low" (calm, reflective, light, philosophical, gentle truths). Match the hook's emotional intensity.
 - "caption": one short paragraph (2-3 sentences) for social media. End with 3 trending, high-engagement hashtags that match the topic. Do NOT use #1section.
 
-Cover topics including: psychology, human nature, business, wealth, AI, successful figures, parenting, personal branding, stupidity vs intelligence, sales, marketing, history, philosophy, politics, economy, nutrition, time management, happiness, health, relationships, home, vehicles, education, retirement, daily costs, work, news, current trends, principles. Vary the number (3 to 7). Every video must feel like a revelation, not a lecture. English only. Return ONLY valid JSON.`;
+Cover topics including: psychology, human nature, business, wealth, AI, successful figures, parenting, personal branding, stupidity vs intelligence, sales, marketing, history, philosophy, politics, economy, nutrition, time management, happiness, health, relationships, home, vehicles, education, retirement, daily costs, work, news, current trends, principles. Make sure the hook number matches the number of lesson items — if hook says "4" there must be 4 lessons. Every video must feel like a revelation, not a lecture. English only. Return ONLY valid JSON.`;
 }
 
 function titleCase(s) {
@@ -138,9 +138,18 @@ function parseLessonsContent(text) {
     description: t.description,
     example: t.example || "",
   }));
+  const hook = titleCase(parsed.hook).replace(/^(\d+)[.\-)\s]+/, "$1 ").replace(/^[12]\b/, "3").trim();
+  const expected = parseInt(hook, 10) || 3;
+  if (lesson.length !== expected) {
+    console.log(`[parse] Hook says ${expected} but AI gave ${lesson.length} lessons, adjusting...`);
+    while (lesson.length > expected) lesson.pop();
+    while (lesson.length < expected && expected <= 7) {
+      lesson.push({ icon: "lightbulb", color: "#FFD700", title: "Think Deeper", description: "There is always more beneath the surface.", example: "The best insights come from questioning everything." });
+    }
+  }
   return {
     type: "lessons",
-    hook: titleCase(parsed.hook).replace(/^(\d+)[.\-)\s]+/, "$1 ").replace(/^[12]\b/, "3").trim(),
+    hook,
     hook_desc: parsed.hook_desc || "",
     hook_icon: parsed.hook_icon || "auto_awesome",
     lesson,
