@@ -145,6 +145,5 @@ function parseLessonsContent(text) {
     lesson,
     cta: parsed.cta || "Follow for more revelations",
     caption: parsed.caption || parsed.hook,
-    footer: "1section.com",
   };
 }
