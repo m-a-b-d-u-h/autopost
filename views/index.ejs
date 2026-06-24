@@ -156,7 +156,6 @@
           <div class="actions">
             <button class="btn-sm" onclick="window.open('/videos/<%= v.file %>','_blank')">View</button>
             <% if (!ps) { %>
-              <span style="font-size:0.7rem;color:#a1a1aa;margin-right:0.5rem">? unknown</span>
               <button class="btn-sm btn-danger" onclick="publishConfirm('<%= v.file %>', this)">Publish</button>
             <% } else if (ps.results.some(r => !r.ok)) { %>
               <button class="btn-sm btn-danger" onclick="publishConfirm('<%= v.file %>', this)">Retry</button>
