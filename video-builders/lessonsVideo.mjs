@@ -9,33 +9,6 @@ const BG_DIR = join(__dirname, "..", "assets", "backgrounds");
 const PROFILE_PNG = join(__dirname, "..", "assets", "logo", "i.png");
 const MUSIC_DIR = join(__dirname, "..", "assets", "music");
 const OUT_DIR = join(__dirname, "..", "output");
-const CACHE_FILE = join(BG_DIR, ".durations.json");
-
-let durationCache = null;
-
-function loadDurationCache() {
-  if (durationCache) return durationCache;
-  try {
-    durationCache = JSON.parse(readFileSync(CACHE_FILE, "utf8"));
-  } catch {
-    durationCache = {};
-  }
-  return durationCache;
-}
-
-function saveDurationCache() {
-  try { writeFileSync(CACHE_FILE, JSON.stringify(durationCache, null, 2)); } catch {}
-}
-
-async function getCachedDuration(file) {
-  const cache = loadDurationCache();
-  const name = file.split("/").pop().split("\\").pop();
-  if (cache[name] != null) return cache[name];
-  const dur = await getVideoDuration(file);
-  cache[name] = dur;
-  saveDurationCache();
-  return dur;
-}
 
 function wrap(text, max) {
   const lines = [];
@@ -53,17 +26,6 @@ function findMusic() {
   if (!existsSync(MUSIC_DIR)) return null;
   const files = readdirSync(MUSIC_DIR).filter(f => /\.(mp3|wav|m4a|ogg)$/i.test(f));
   return files.length ? join(MUSIC_DIR, files[Math.floor(Math.random() * files.length)]) : null;
-}
-
-function getVideoDuration(file) {
-  try {
-    const r = spawn("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", file], { stdio: "pipe" });
-    return new Promise((resolve) => {
-      let d = "";
-      r.stdout.on("data", c => d += c);
-      r.on("close", () => resolve(parseFloat(d.trim()) || 10));
-    });
-  } catch { return 10; }
 }
 
 async function findBackground(dur = 30) {
