@@ -58,57 +58,57 @@ function buildLessonsPrompt(existingHooks = []) {
 Generate content for a "numbered lessons" social media video. Each lesson uncovers a hidden pattern, uncomfortable reality, or overlooked opportunity — then delivers a truth backed by data or real-world evidence.
 
 Return a JSON object with:
-- "hook": a numbered opening line that grabs attention with a surprising fact, hidden pattern, or uncomfortable reality. 5 to 12 words. Be emotionally powerful but never insulting — reveal truths that make people think, not feel attacked. The number MUST be the first word followed directly by a space and then the rest (e.g. "5 habits destroying your health" — NOT "5. habits", NOT "5- habits", no dots, no dashes). NEVER mention AI tools, tech tools, or software tools. Use a wide variety of topics across these example categories:
+- "hook": a numbered opening line that grabs attention with a surprising fact, hidden pattern, or uncomfortable reality. 5 to 12 words. The number MUST be between 3 and 7 — NEVER use 1 or 2. Never repeat the same number pattern across videos. The number MUST be the first word followed directly by a space (e.g. "5 habits destroying your health" — NOT "5. habits", no dots, no dashes). Vary the topics aggressively between videos — NEVER default to the same category. Avoid overused words like "silent", "secretly", "quietly", "hidden", "nobody tells you". Make every hook feel unique and unexpected. NEVER mention AI tools, tech tools, or software tools. Use a wide variety of topics across these example categories:
 
-Psychology & Human Nature: "4 psychological patterns that control your decisions", "5 things your childhood secretly shaped about you", "3 reasons humans naturally resist change (and how it holds them back)", "6 silent signs of jealousy you ignore every day", "4 phrases that accidentally push people away", "3 truths about ego that most people never admit"
+Psychology & Human Nature: "4 psychological patterns that control your decisions", "5 things your childhood shaped about you", "3 reasons humans naturally resist change", "6 jealousy signs you ignore every day", "4 phrases that push people away", "3 truths about ego most people never admit"
 
-Business & Entrepreneurship: "4 reasons 90% of startups fail within 3 years", "5 businesses that grew during every recession in history", "3 things successful founders figured out early", "6 warning signs your business is quietly dying"
+Business & Entrepreneurship: "4 reasons 90% of startups fail within 3 years", "5 businesses that grew during every recession", "3 things successful founders figured out early", "6 warning signs your business is dying"
 
-Wealth & Financial Freedom: "3 numbers that determine your financial future", "5 money habits that separate the wealthy from everyone else", "4 things the top 1% understand about debt", "6 hidden costs eating 40% of your lifetime income"
+Wealth & Financial Freedom: "3 numbers that determine your financial future", "5 money habits that separate the wealthy", "4 things the top 1% understand about debt", "6 costs eating 40% of your lifetime income"
 
-AI & The Future: "4 industries facing massive change by 2030", "5 jobs that are transforming faster than you think", "3 skills that become more valuable as AI grows", "6 truths about the future of work nobody prepares you for"
+AI & The Future: "4 industries facing massive change by 2030", "5 jobs transforming faster than you think", "3 skills that grow more valuable as AI rises", "6 truths about the future of work"
 
-Successful Figures: "5 daily habits shared by 100 self-made billionaires", "4 patterns in how the world's most successful people think", "3 sacrifices behind every overnight success story", "6 lessons from historic failures that built empires"
+Successful Figures: "5 daily habits shared by 100 billionaires", "4 patterns in how the most successful people think", "3 sacrifices behind every overnight success", "6 lessons from historic failures that built empires"
 
-Parenting: "4 things children absorb from parents without realizing it", "5 research-backed habits that build confident kids", "3 parenting approaches that predict future success", "6 conversations every parent should have before age 12"
+Parenting: "4 things children absorb from parents", "5 research-backed habits that build confident kids", "3 parenting approaches that predict future success", "6 conversations every parent should have before age 12"
 
-Personal Branding: "5 factors that determine how people perceive you", "4 ways to build credibility without a title or degree", "3 mistakes that weaken your reputation over time", "6 habits of people who naturally command respect"
+Personal Branding: "5 factors that determine how people perceive you", "4 ways to build credibility without a title", "3 mistakes that weaken your reputation", "6 habits of people who command respect"
 
-Stupidity & Intelligence: "5 cognitive biases that trick even the smartest minds", "4 reasons intelligent people sometimes make terrible decisions", "3 patterns of thinking that limit potential", "6 ways to recognize when confidence becomes dangerous"
+Stupidity & Intelligence: "5 cognitive biases that trick even smart minds", "4 reasons intelligent people make terrible decisions", "3 patterns of thinking that limit potential", "6 ways to recognize when confidence becomes dangerous"
 
-Sales & Marketing: "4 psychological triggers proven to increase conversion by 300%", "5 sales principles that work after 100 years", "3 reasons customers say no (and what to do about it)", "6 concepts that separate average marketers from great ones"
+Sales & Marketing: "4 psychological triggers that increase conversion by 300%", "5 sales principles that work after 100 years", "3 reasons customers say no", "6 concepts that separate average marketers from great ones"
 
-History: "5 patterns that repeat across every collapsed civilization", "3 economic lessons from the 1929 crash that apply today", "4 wars that reshaped the modern economy", "6 forgotten strategies from ancient leaders that still work"
+History: "5 patterns that repeat across every collapsed civilization", "3 economic lessons from the 1929 crash", "4 wars that reshaped the modern economy", "6 forgotten strategies from ancient leaders that still work"
 
-Philosophy & Filsafat: "4 stoic principles that reduce anxiety overnight", "5 questions that change how you see your entire life", "3 lessons from existentialism about finding meaning", "6 ancient ideas that modern psychology just proved right"
+Philosophy: "4 stoic principles that reduce anxiety overnight", "5 questions that change how you see your entire life", "3 lessons from existentialism about finding meaning", "6 ancient ideas that modern psychology just proved right"
 
-Politics & Economy: "4 economic shifts that affect your daily spending power", "5 financial patterns that repeat every 10-15 years", "3 things about inflation that schools never explain", "6 trends in global wealth distribution you should understand"
+Politics & Economy: "4 economic shifts that affect your daily spending", "5 financial patterns that repeat every 15 years", "3 things about inflation that schools never explain", "6 trends in global wealth distribution"
 
-Nutrition & Health: "5 foods that research shows affect mental performance", "4 nutrition myths that cost you energy every day", "3 lifestyle choices that add 10 healthy years", "6 signs your daily habits are silently draining you"
+Nutrition & Health: "5 foods that affect mental performance", "4 nutrition myths that cost you energy every day", "3 lifestyle choices that add 10 healthy years", "6 signs your daily habits are draining you"
 
-Time Management: "4 reasons 80% of people feel time-poor every day", "5 productivity principles backed by neuroscience", "3 common time traps that steal 20 hours a week", "6 ways to protect your focus in a distracted world"
+Time Management: "4 reasons 80% of people feel time-poor", "5 productivity principles backed by neuroscience", "3 time traps that steal 20 hours a week", "6 ways to protect your focus in a distracted world"
 
-Happiness & Filosofi: "5 research findings about what actually makes people happy", "4 things happy people quietly stop doing", "3 misconceptions about money and fulfillment", "6 stoic lessons for finding peace in chaos"
+Happiness: "5 research findings about what actually makes people happy", "4 things happy people stop doing", "3 misconceptions about money and fulfillment", "6 stoic lessons for finding peace in chaos"
 
 Health: "4 warning signs your body sends before serious problems", "5 sleep science facts that change how you rest", "3 daily movements that prevent 80% of back pain", "6 health metrics you should track after 30"
 
-Relationship: "5 patterns that predict relationship success or failure", "4 things couples with 20+ years together do differently", "3 communication mistakes that create distance", "6 boundaries that healthy relationships all share"
+Relationship: "5 patterns that predict relationship success or failure", "4 things couples with 20+ years together do differently", "3 communication mistakes that create distance", "6 boundaries that healthy relationships share"
 
-House & Rumah: "4 financial realities about renting vs buying", "5 home improvements that actually increase property value", "3 things about mortgages that most people learn too late", "6 hidden costs of homeownership nobody talks about"
+House: "4 financial realities about renting vs buying", "5 home improvements that increase property value", "3 things about mortgages learned too late", "6 hidden costs of homeownership"
 
-Vehicles & Kendaraan: "4 financial facts about car depreciation that change buying decisions", "5 strategies to save 30% on your next vehicle", "3 truths about auto financing dealers don't highlight", "6 lifetime costs of car ownership most people underestimate"
+Vehicles: "4 financial facts about car depreciation", "5 strategies to save 30% on your next vehicle", "3 truths about auto financing", "6 lifetime costs of car ownership"
 
-Education: "5 skills that predict career success more than degrees", "4 things the traditional education system doesn't teach", "3 ways self-learning creates more opportunities than formal school", "6 subjects you should master before age 25"
+Education: "5 skills that predict career success more than degrees", "4 things school never teaches", "3 ways self-learning beats formal education", "6 subjects you should master before 25"
 
-Retirement & Dana Pensiun: "4 numbers that determine if your retirement is on track", "5 retirement myths that cost people decades of savings", "3 investment principles that work over 30-year periods", "6 strategies to retire 10 years earlier than planned"
+Retirement: "4 numbers that determine your retirement readiness", "5 retirement myths that cost decades of savings", "3 investment principles that work over 30 years", "6 strategies to retire 10 years earlier"
 
-Daily Costs & Biaya: "5 small monthly expenses that add up to millions over a lifetime", "4 financial habits that save 30% of your income without sacrifice", "3 invisible costs silently draining your bank account", "6 micro-changes that save thousands per year"
+Daily Costs: "5 small expenses that add up to millions over a lifetime", "4 financial habits that save 30% of your income", "3 invisible costs draining your bank account", "6 micro-changes that save thousands per year"
 
-Work & Pekerjaan: "4 signs your current role is limiting your long-term growth", "5 factors that actually determine your earning potential", "3 workplace dynamics that quietly hold careers back", "6 skills that make you indispensable in any industry"
+Work: "4 signs your role limits your long-term growth", "5 factors that determine your earning potential", "3 workplace dynamics that hold careers back", "6 skills that make you indispensable"
 
-News & Trends: "4 global trends reshaping everyday life right now", "5 patterns in the news that repeat every decade", "3 shifts happening in 2026 that most people haven't noticed", "6 ways to spot real trends versus noise"
+News & Trends: "4 global trends reshaping everyday life right now", "5 patterns in the news that repeat every decade", "3 shifts in 2026 most people haven't noticed", "6 ways to spot real trends versus noise"
 
-Principles: "5 timeless principles that predict long-term success", "4 decision-making rules used by the world's top performers", "3 core principles that separate progress from stagnation", "6 life frameworks that simplify every complex choice"
+Principles: "5 timeless principles that predict long-term success", "4 decision-making rules used by top performers", "3 core principles that separate progress from stagnation", "6 life frameworks that simplify every complex choice"
 - "hook_desc": a one-sentence description that expands on the hook and sets up what the lessons will cover. Think of it as the "big picture" context. 8-15 words. Keep it sharp and reality-driven, not generic.
 - "hook_icon": a Material Symbols Outlined icon name in snake_case that PERFECTLY matches the hook theme. DO NOT use generic icons — pick one that directly visualizes the hook subject. Examples: hook about money → "payments" or "attach_money", hook about psychology → "psychology" or "neurology", hook about business → "business" or "rocket_launch", hook about health → "monitor_heart" or "exercise", hook about relationships → "diversity_3" or "group", hook about parenting → "family_star" or "child_care", hook about education → "school" or "auto_stories", hook about time → "schedule" or "timer", hook about success → "trending_up" or "military_tech". Always think: what single icon best represents this exact hook?
 - "lesson": an array of 3 to 7 objects (vary the count to match hook number), each with:
@@ -140,7 +140,7 @@ function parseLessonsContent(text) {
   }));
   return {
     type: "lessons",
-    hook: titleCase(parsed.hook).replace(/^(\d+)[.\-)\s]+/, "$1 ").trim(),
+    hook: titleCase(parsed.hook).replace(/^(\d+)[.\-)\s]+/, "$1 ").replace(/^[12]\b/, "3").trim(),
     hook_desc: parsed.hook_desc || "",
     hook_icon: parsed.hook_icon || "auto_awesome",
     lesson,
