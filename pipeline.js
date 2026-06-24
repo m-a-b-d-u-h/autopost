@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { generateContent } from "./services/openrouter.js";
 import { generateVideo } from "./services/videogen.js";
 import { getChannels, createPost } from "./services/buffer.js";
+import { getAllHooks, addHook, getHookCount } from "./services/history.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLISH_PATH = join(__dirname, "publish-status.json");
@@ -24,11 +25,18 @@ function savePublishStatus(status) {
 export async function runPipeline() {
   console.log(`[pipeline] Starting: lessons`);
 
-  const content = await generateContent();
-  console.log(`[pipeline] Content generated (lessons)`);
+  const existingHooks = getAllHooks();
+  console.log(`[pipeline] ${getHookCount()} existing hooks in DB`);
+
+  const content = await generateContent(existingHooks);
+  console.log(`[pipeline] Content generated: "${content.hook}"`);
 
   const videoPath = await generateVideo(content);
   console.log(`[pipeline] Video rendered: ${videoPath}`);
+
+  const videoFile = basename(videoPath);
+  addHook({ hook: content.hook, hook_desc: content.hook_desc, caption: content.caption, video_file: videoFile });
+  console.log(`[pipeline] Hook saved to history DB`);
 
   const token = process.env.BUFFER_TOKEN;
   const publicUrl = process.env.PUBLIC_URL;

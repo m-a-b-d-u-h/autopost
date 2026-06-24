@@ -1,7 +1,7 @@
 const MODEL = process.env.OPENROUTER_MODEL || "nvidia/nemotron-3-ultra-550b-a55b:free";
 
-export async function generateContent() {
-  const text = await askAI(buildLessonsPrompt());
+export async function generateContent(existingHooks = []) {
+  const text = await askAI(buildLessonsPrompt(existingHooks));
   return parseLessonsContent(text);
 }
 
@@ -48,8 +48,12 @@ async function askAI(prompt, retries = 3) {
   }
 }
 
-function buildLessonsPrompt() {
-  return `You are a viral content creator who reveals hard truths backed by reality. Use emotionally charged, surprising language that triggers curiosity and self-reflection. Every hook must feel like an eye-opening revelation the audience never saw coming.
+function buildLessonsPrompt(existingHooks = []) {
+  const avoidMsg = existingHooks.length
+    ? `\n\nIMPORTANT: These hooks are already used and MUST NOT be repeated. Generate something completely different:\n${existingHooks.map(h => `- "${h}"`).join("\n")}`
+    : "";
+
+  return `You are a viral content creator who reveals hard truths backed by reality. Use emotionally charged, surprising language that triggers curiosity and self-reflection. Every hook must feel like an eye-opening revelation the audience never saw coming. You MUST generate a hook that has NEVER been used before — check the list of existing hooks below and avoid every one of them.${avoidMsg}
 
 Generate content for a "numbered lessons" social media video. Each lesson uncovers a hidden pattern, uncomfortable reality, or overlooked opportunity — then delivers a truth backed by data or real-world evidence.
 
