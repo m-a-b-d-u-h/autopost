@@ -1,22 +1,20 @@
 const BASE = "https://api.buffer.com";
 
 export async function getChannels(token) {
-  const query = `query GetChannels {
-    account {
-      organizations {
-        id
-        channels {
-          id
-          name
-          service
-        }
-      }
+  const orgQuery = `query { account { organizations { id } } }`;
+  const orgData = await graphql(token, orgQuery);
+  const orgs = orgData.account?.organizations ?? [];
+  if (!orgs.length) return { organizations: [], channels: [] };
+
+  const channelsQuery = `query {
+    channels(input: { organizationId: "${orgs[0].id}" }) {
+      id
+      name
+      service
     }
   }`;
-
-  const data = await graphql(token, query);
-  const orgs = data.account?.organizations ?? [];
-  const channels = orgs.flatMap((o) => o.channels ?? []);
+  const chData = await graphql(token, channelsQuery);
+  const channels = chData.channels ?? [];
   return { organizations: orgs, channels };
 }
 

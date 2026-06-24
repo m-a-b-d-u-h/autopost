@@ -139,11 +139,11 @@ function parseLessonsContent(text) {
     example: t.example || "",
   }));
   const hook = titleCase(parsed.hook).replace(/^(\d+)[.\-)\s]+/, "$1 ").replace(/^[12]\b/, "3").trim();
-  const expected = parseInt(hook, 10) || 3;
+  const expected = Math.min(7, Math.max(3, parseInt(hook, 10) || 3));
   if (lesson.length !== expected) {
     console.log(`[parse] Hook says ${expected} but AI gave ${lesson.length} lessons, adjusting...`);
     while (lesson.length > expected) lesson.pop();
-    while (lesson.length < expected && expected <= 7) {
+    while (lesson.length < expected) {
       lesson.push({ icon: "lightbulb", color: "#FFD700", title: "Think Deeper", description: "There is always more beneath the surface.", example: "The best insights come from questioning everything." });
     }
   }
