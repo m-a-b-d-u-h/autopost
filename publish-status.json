@@ -1,1 +1,24 @@
-{}
+{
+  "lessons-1782338770506.mp4": {
+    "type": "lessons",
+    "caption": "Most people walk blind into the same self‑defeating myths, never realizing they’re the real barrier to success. Spot the trap, break the cycle, and rewrite your story. #MythBusting #FutureReady #SelfGrowth",
+    "results": [
+      {
+        "channel": "Netma",
+        "service": "youtube",
+        "ok": true
+      },
+      {
+        "channel": "netma.q",
+        "service": "tiktok",
+        "ok": true
+      },
+      {
+        "channel": "netma.q",
+        "service": "instagram",
+        "ok": true
+      }
+    ],
+    "date": "25/6/2026, 05.07.54"
+  }
+}
