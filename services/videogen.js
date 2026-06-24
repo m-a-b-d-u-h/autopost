@@ -16,6 +16,6 @@ export async function generateVideo(content) {
   const timestamp = Date.now();
   const outFile = `lessons-${timestamp}.mp4`;
   const outPath = join(OUT_DIR, outFile);
-  await limit(() => generateLessonsVideo({ hook: content.hook, hook_desc: content.hook_desc, hook_icon: content.hook_icon, lesson: content.lesson, cta: content.cta, output: outPath }));
+  await limit(() => generateLessonsVideo({ hook: content.hook, hook_desc: content.hook_desc, hook_icon: content.hook_icon, lesson: content.lesson, cta: content.cta, mood: content.mood, output: outPath }));
   return outPath;
 }

@@ -118,6 +118,7 @@ Principles: "5 timeless principles that predict long-term success", "4 decision-
   - "description": the big idea — explain WHY this matters (8-15 words). Make it emotional or surprising.
   - "example": one concrete truth or real-life application (10-20 words). Make it hit home.
 - "cta": one sentence combining a question and a follow/save call-to-action. Under 15 words.
+- "mood": classify the content energy as "high" (hard-hitting, urgent, dangerous, aggressive, high-stakes truths), "medium" (balanced, educational, informative, practical), or "low" (calm, reflective, light, philosophical, gentle truths). Match the hook's emotional intensity.
 - "caption": one short paragraph (2-3 sentences) for social media. End with 3 trending, high-engagement hashtags that match the topic. Do NOT use #1section.
 
 Cover topics including: psychology, human nature, business, wealth, AI, successful figures, parenting, personal branding, stupidity vs intelligence, sales, marketing, history, philosophy, politics, economy, nutrition, time management, happiness, health, relationships, home, vehicles, education, retirement, daily costs, work, news, current trends, principles. Vary the number (3 to 7). Every video must feel like a revelation, not a lecture. English only. Return ONLY valid JSON.`;
@@ -145,5 +146,6 @@ function parseLessonsContent(text) {
     lesson,
     cta: parsed.cta || "Follow for more revelations",
     caption: parsed.caption || parsed.hook,
+    mood: parsed.mood || "medium",
   };
 }

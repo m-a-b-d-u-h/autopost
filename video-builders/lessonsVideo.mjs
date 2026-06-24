@@ -22,10 +22,20 @@ function wrap(text, max) {
   return lines;
 }
 
-function findMusic() {
+function findMusic(mood) {
   if (!existsSync(MUSIC_DIR)) return null;
-  const files = readdirSync(MUSIC_DIR).filter(f => /\.(mp3|wav|m4a|ogg)$/i.test(f));
-  return files.length ? join(MUSIC_DIR, files[Math.floor(Math.random() * files.length)]) : null;
+  const moodDir = join(MUSIC_DIR, mood || "medium");
+  if (existsSync(moodDir)) {
+    const files = readdirSync(moodDir).filter(f => /\.(mp3|wav|m4a|ogg)$/i.test(f));
+    if (files.length) return join(moodDir, files[Math.floor(Math.random() * files.length)]);
+  }
+  const all = readdirSync(MUSIC_DIR, { withFileTypes: true })
+    .filter(d => d.isDirectory())
+    .flatMap(d => {
+      const dir = join(MUSIC_DIR, d.name);
+      return readdirSync(dir).filter(f => /\.(mp3|wav|m4a|ogg)$/i.test(f)).map(f => join(dir, f));
+    });
+  return all.length ? all[Math.floor(Math.random() * all.length)] : null;
 }
 
 async function findBackground(dur = 30) {
@@ -72,14 +82,14 @@ function hexToAssColor(hex) {
   return `&H00${b.toString(16).padStart(2, "0")}${g.toString(16).padStart(2, "0")}${r.toString(16).padStart(2, "0")}&`;
 }
 
-export async function generateLessonsVideo({ hook, hook_desc, hook_icon, lesson, cta, output }) {
+export async function generateLessonsVideo({ hook, hook_desc, hook_icon, lesson, cta, mood, output }) {
   const lessonCount = lesson.length;
   const SLIDE_DUR = 5;
   const openingEnd = 5;
   const endStart = openingEnd + lessonCount * SLIDE_DUR;
   const DUR = endStart + 5;
 
-  const music = findMusic();
+  const music = findMusic(mood);
   const bgFiles = await findBackground(DUR);
   const ts = Date.now();
   const assFile = join(OUT_DIR, `${ts}.ass`);
