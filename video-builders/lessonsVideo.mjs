@@ -157,8 +157,8 @@ export async function generateLessonsVideo({ hook, hook_desc, hook_icon, lesson,
   const gapTitleDesc = 14;
   const gapDescEx = 34;
   const ctaLineH = 89;
-  const contentCenterY = 855;
-  const lessonCtaCenterY = contentCenterY + 110;
+  const contentCenterY = 880;
+  const lessonCtaCenterY = contentCenterY + 85;
   const ctaCenterY = lessonCtaCenterY + 90;
 
   // Hook TEXT centered at contentCenterY, PFP below gold bar
