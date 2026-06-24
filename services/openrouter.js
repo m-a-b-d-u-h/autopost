@@ -118,7 +118,7 @@ Principles: "5 timeless principles that predict long-term success", "4 decision-
   - "description": the big idea — explain WHY this matters (8-15 words). Make it emotional or surprising.
   - "example": one concrete truth or real-life application (10-20 words). Make it hit home.
 - "cta": one sentence combining a question and a follow/save call-to-action. Under 15 words.
-- "caption": one short paragraph (2-3 sentences) for social media. End with #1section.
+- "caption": one short paragraph (2-3 sentences) for social media. End with 3 trending, high-engagement hashtags that match the topic. Do NOT use #1section.
 
 Cover topics including: psychology, human nature, business, wealth, AI, successful figures, parenting, personal branding, stupidity vs intelligence, sales, marketing, history, philosophy, politics, economy, nutrition, time management, happiness, health, relationships, home, vehicles, education, retirement, daily costs, work, news, current trends, principles. Vary the number (3 to 7). Every video must feel like a revelation, not a lecture. English only. Return ONLY valid JSON.`;
 }
@@ -144,7 +144,7 @@ function parseLessonsContent(text) {
     hook_icon: parsed.hook_icon || "auto_awesome",
     lesson,
     cta: parsed.cta || "Follow for more revelations",
-    caption: parsed.caption || parsed.hook + " #1section",
+    caption: parsed.caption || parsed.hook,
     footer: "1section.com",
   };
 }
