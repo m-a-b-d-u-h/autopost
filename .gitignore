@@ -7,3 +7,5 @@ output/
 assets/music/*
 assets/fonts/*
 *.db
+*.db-shm
+*.db-wal
