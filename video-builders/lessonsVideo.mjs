@@ -215,7 +215,7 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipT,,0,0,0,,{\\an4\\pos(${MX},${titleY})\\fad(300,300)}${titleWrap[0]}\n`;
     const wmX = Math.round(W - 0.2 * 1750);
     const wmY = lessonCtaCenterY;
-    ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipIcon,,0,0,0,,{\\an5\\pos(${wmX},${wmY})\\fad(300,300)\\fs1750\\c&HFFFFFF&\\alpha&HFC&}${iconMap(cpMap, t.icon)}\n`;
+    ass += `Dialogue: 0,${toAssTime(start)},${toAssTime(end)},TipIcon,,0,0,0,,{\\an5\\pos(${wmX},${wmY})\\fad(300,300)\\fs1750\\c&HFFFFFF&\\alpha&HF2&}${iconMap(cpMap, t.icon)}\n`;
 
     let descY = descStartY;
     for (const sentence of descSentences) {
