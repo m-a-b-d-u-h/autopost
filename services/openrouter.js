@@ -10,7 +10,7 @@ async function askAI(prompt, retries = 3) {
   if (!key) throw new Error("OPENROUTER_KEY not set");
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 120000);
+  const timeout = setTimeout(() => controller.abort(), 1800000);
 
   try {
     const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
